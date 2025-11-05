@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.14] - 2025-11-05
+- **UI Enhancement**: Code fields now automatically switch examples when changing Mode (Run Once for Each Item / Run Once for All Items / n8n Code compat).
+- **UX**: Removed `parameterPane: "wide"` for better field sizing - inputs now display at optimal width.
+- **Documentation**: Complete README rewrite with comprehensive guide:
+  - Detailed explanation of every field and option
+  - 5 complete real-world examples with input/output
+  - Init Code usage guide with 5 practical scenarios
+  - Performance tips and best practices
+  - Migration guide from native Code node
+  - Troubleshooting section
+  - Professional structure with emojis and clear sections
+- **Examples**: Added mode-specific code examples:
+  - Run Once for Each Item: Uses `$input.item` and `index`
+  - Run Once for All Items: Uses `items` array and aggregation
+  - n8n Code (compat): Uses full `items` structure for migration
+- **Build**: Updated and tested all changes.
+
 ## [0.1.13] - 2025-11-05
 - **Major Refactor**: Implemented proper field separation by language using `displayOptions`.
 - **UI**: Fields now automatically switch when toggling between JavaScript and Python languages.

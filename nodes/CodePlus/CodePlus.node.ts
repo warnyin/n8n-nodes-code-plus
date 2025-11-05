@@ -86,7 +86,6 @@ export class CodePlus implements INodeType {
     },
     inputs: ["main"],
     outputs: ["main"],
-    parameterPane: "wide",
     properties: [
       {
         displayName: "Mode",
