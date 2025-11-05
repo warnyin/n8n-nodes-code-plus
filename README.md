@@ -1,121 +1,121 @@
 # Code Plus — n8n Community Node
 
-รัน JavaScript แบบกำหนดเอง พร้อมติดตั้งไลบรารี npm ระหว่างรัน และมีแคชถาวรสำหรับใช้งานซ้ำ
+Run custom JavaScript with installable npm libraries and a persistent cache.
 
 ![npm version](https://img.shields.io/npm/v/@warnyin/n8n-nodes-code-plus.svg)
 ![npm downloads](https://img.shields.io/npm/dm/@warnyin/n8n-nodes-code-plus.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
-**แพ็คเกจ:** `@warnyin/n8n-nodes-code-plus`
+Package: `@warnyin/n8n-nodes-code-plus`
 
-## เกี่ยวกับ
-- ติดตั้งไลบรารี npm จาก UI ของโน้ดได้โดยตรง (เช่น `nanoid,lodash` หรือ JSON array)
-- แคชไลบรารีในไดเรกทอรีถาวรเพื่อใช้ซ้ำ ลดเวลาและทรัพยากร
-- โค้ดเริ่มต้น (Init Code) รันเพียงครั้งเดียวก่อนโค้ดหลัก
-- โหมดการรัน: ต่อรายการ (Per Item) หรือครั้งเดียว (Once)
-- ตั้งค่า Timeout, ล้างแคช, และบังคับติดตั้งใหม่ได้
-- รันใน VM ที่จำกัดพร้อม `require` แบบกำหนดเองผูกกับแคช
+## About
+- Install npm libraries directly from the node UI (comma-separated or JSON array).
+- Cache libraries in a persistent directory for reuse and faster runs.
+- Optional Init Code that runs once before the main code.
+- Run modes: Per Item or Once.
+- Control Timeout, clear cache, and force reinstall.
+- Executes in a restricted VM with a custom `require` bound to the cache.
 
-โครงสร้างและรูปแบบเอกสารได้รับแรงบันดาลใจจากสไตล์การเขียน README ของแพ็คเกจ Swagger API สำหรับ n8n ของผู้เขียนเดียวกัน [อ้างอิง][ref-swagger]。
+Documentation structure is inspired by the author’s Swagger API node for n8n [reference][ref-swagger].
 
-## คุณสมบัติเด่น
-- ติดตั้ง npm dependencies ได้โดยตรงในขั้นตอนการทำงาน
-- รองรับทั้ง comma-separated และ JSON array สำหรับรายการไลบรารี
-- จัดเก็บในแคชถาวร (ค่าเริ่มต้น `~/.n8n/code-plus-cache`)
-- เลือกโหมดการรัน: `Per Item` หรือ `Once`
-- ตัวเลือกความปลอดภัยและประสิทธิภาพ: Timeout, Clear Cache, Force Reinstall, Preinstall Only
-- ใช้ `require()` เฉพาะจากแคชเพื่อคุมสCOPE
+## Key Features
+- On-the-fly npm dependency installation.
+- Supports both comma-separated and JSON array input for libraries.
+- Persistent cache directory (default `~/.n8n/code-plus-cache`).
+- Select `Run Mode`: `Per Item` or `Once`.
+- Safety and performance options: Timeout, Clear Cache, Force Reinstall, Preinstall Only.
+- `require()` is scoped to the cache directory for controlled loading.
 
-## การติดตั้ง
-### วิธีที่ 1: Community Nodes (แนะนำ)
-1) เปิด n8n ไปที่ `Settings → Community Nodes`
-2) กด `Install`
-3) ใส่ชื่อแพ็คเกจ: `@warnyin/n8n-nodes-code-plus`
-4) ยอมรับความเสี่ยงและติดตั้ง
+## Installation
+### Option 1: Community Nodes (Recommended)
+1) Open n8n and go to `Settings → Community Nodes`
+2) Click `Install`
+3) Enter: `@warnyin/n8n-nodes-code-plus`
+4) Accept the risks and install
 
-### วิธีที่ 2: ติดตั้งด้วยตนเอง
+### Option 2: Manual Installation
 ```bash
 cd ~/.n8n/nodes
 npm install @warnyin/n8n-nodes-code-plus
-# รีสตาร์ท n8n
+# Restart n8n
 ```
 
-### วิธีที่ 3: พัฒนาและเชื่อมโยงแบบโลคอล
+### Option 3: Local Development & Linking
 ```bash
-# โคลน ติดตั้ง และบิลด์
+# Clone, install, and build
 git clone https://github.com/warnyin/n8n-nodes-code-plus.git
 cd n8n-nodes-code-plus
 npm install
 npm run build
 
-# ลิงก์ไปยัง n8n
+# Link to n8n
 npm link
 cd ~/.n8n
 npm link @warnyin/n8n-nodes-code-plus
-# รีสตาร์ท n8n
+# Restart n8n
 ```
 
-## การใช้งาน
-### พารามิเตอร์หลัก
-- `Libraries`: ตัวอย่าง `nanoid@latest,lodash` หรือ `["nanoid","dayjs@^1"]`
-- `Init Code`: โค้ดที่รันครั้งเดียวก่อนโค้ดหลัก
-- `Main Code`: โค้ดหลักที่ใช้ `require()` โหลดไลบรารีจากแคช
-- `Run Mode`: `Per Item` หรือ `Once`
+## Usage
+### Main Parameters
+- `Libraries`: e.g. `nanoid@latest,lodash` or `["nanoid","dayjs@^1"]`
+- `Init Code`: runs once before main code
+- `Main Code`: JavaScript where `require()` loads from the cache
+- `Run Mode`: `Per Item` or `Once`
 - `Options`:
-  - `Cache Directory`: ค่าเริ่มต้น `~/.n8n/code-plus-cache`
+  - `Cache Directory` (default: `~/.n8n/code-plus-cache`)
   - `Clear Cache Before Run`
   - `Force Reinstall`
   - `Timeout (ms)`
   - `Preinstall Only`
 
 ### Quick Start
-ตัวอย่าง `Main Code` แบบง่ายในการสร้างไอดี
+Simple `Main Code` to generate an ID:
 ```js
 const { nanoid } = require('nanoid');
 return { id: nanoid(), input: item };
 ```
 
-## ตัวอย่างการใช้งาน
-- สร้างไอดีสำหรับแต่ละรายการด้วย `nanoid`
+## Examples
+- Generate IDs for each item using `nanoid`:
 ```js
 const { nanoid } = require('nanoid');
 return items.map((item) => ({ ...item, id: nanoid() }));
 ```
 
-- ใช้ `lodash` เพื่อจัดกลุ่มข้อมูล
+- Use `lodash` to chunk data:
 ```js
 const _ = require('lodash');
 const chunks = _.chunk(items, 50);
 return { chunksCount: chunks.length };
 ```
 
-- รันครั้งเดียวด้วย `dayjs` เพื่อปั๊ม timestamp
+- Run once and stamp a timestamp via `dayjs`:
 ```js
 const dayjs = require('dayjs');
 return { generatedAt: dayjs().toISOString() };
 ```
 
-## หมายเหตุและข้อจำกัด
-- ต้องมีสิทธิ์และการเข้าถึงเครือข่ายเพื่อ `npm install` บนเซิร์ฟเวอร์ n8n
-- ไลบรารีถูกติดตั้งในไดเรกทอรีแคชเท่านั้น ไม่ใช่ภายใน n8n โดยตรง
-- `require()` จำกัดให้โหลดจากแคช แต่ยังใช้ Node built-ins ผ่าน sandbox ได้
-- หลีกเลี่ยงโค้ดที่รันยาวหรือบล็อก; ตั้งค่า `Timeout (ms)` ให้เหมาะสม
-- เวอร์ชัน `0.1.1` ปรับโครงสร้างไฟล์บิลด์ให้ n8n โหลดถูกต้องที่ `dist/nodes/CodePlus/CodePlus.node.js`
+## Notes & Limitations
+- Requires network access and permission to run `npm install` on the n8n server.
+- Libraries are installed into the cache directory only, not into n8n itself.
+- `require()` is restricted to the cache; Node built-ins are accessible via the sandbox.
+- Avoid long-running or blocking code; configure `Timeout (ms)` appropriately.
+- Version `0.1.1` adjusted the build output so n8n loads from `dist/nodes/CodePlus/CodePlus.node.js`.
 
-## การพัฒนา
+## Development
 ```bash
 npm install
 npm run build
-# ใช้ npm link ตามขั้นตอนด้านบนเพื่อเชื่อมกับ n8n
+# Use npm link as shown above to connect with n8n
 ```
 
 ## Changelog
-- ดูรายละเอียดการเปลี่ยนแปลงใน `CHANGELOG.md`
+- See `CHANGELOG.md` for release notes.
 
 ## License
-- MIT License — ดูรายละเอียดใน `LICENSE.md`
+- MIT License — see `LICENSE.md`.
 
-## อ้างอิง
-- [0] @warnyin/n8n-nodes-swagger-api — แนวทางจัดโครงสร้าง README และส่วนต่าง ๆ [ref-swagger]
+## References
+- [0] @warnyin/n8n-nodes-swagger-api — README structure and sections [ref-swagger]
 
 [ref-swagger]: https://www.npmjs.com/package/@warnyin/n8n-nodes-swagger-api#-warnyinn8n-nodes-swagger-api

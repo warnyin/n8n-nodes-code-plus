@@ -52,6 +52,12 @@ function parseLibraries(librariesRaw: string): string[] {
     .filter((s) => s.length > 0);
 }
 
+// Wrap user-provided code so that top-level `return` and `await` are allowed.
+// Using an async IIFE ensures `await` works and a returned value is captured.
+function wrapAsyncIIFE(code: string): string {
+  return `(async () => {\n${code}\n})()`;
+}
+
 function isLibInstalled(cacheDir: string, libName: string): boolean {
   return existsSync(path.join(cacheDir, "node_modules", libName));
 }
@@ -237,7 +243,8 @@ export class CodePlus implements INodeType {
     // Run init code once if provided
     if (initCode && initCode.trim().length > 0) {
       try {
-        vm.runInContext(initCode, context, { timeout: timeoutMs });
+        const initWrapped = wrapAsyncIIFE(initCode);
+        await Promise.resolve(vm.runInContext(initWrapped, context, { timeout: timeoutMs }));
       } catch (err) {
         if (this.continueOnFail()) {
           return [[{ json: { error: "Init code error", detail: String(err) } }]];
@@ -247,6 +254,7 @@ export class CodePlus implements INodeType {
     }
 
     // Execute main code
+    const wrappedMainCode = wrapAsyncIIFE(code);
     if (runMode === "perItem") {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -256,7 +264,9 @@ export class CodePlus implements INodeType {
           (context as any).items = items.map((x) => x.json);
           (context as any).index = i;
 
-          const result = vm.runInContext(code, context, { timeout: timeoutMs });
+          const result = await Promise.resolve(
+            vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
+          );
 
           if (Array.isArray(result)) {
             for (const r of result) {
@@ -282,7 +292,9 @@ export class CodePlus implements INodeType {
       // Run once
       try {
         (context as any).items = items.map((x) => x.json);
-        const result = vm.runInContext(code, context, { timeout: timeoutMs });
+        const result = await Promise.resolve(
+          vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
+        );
         if (Array.isArray(result)) {
           for (const r of result) returnData.push({ json: r });
         } else if (typeof result === "object" && result !== null) {

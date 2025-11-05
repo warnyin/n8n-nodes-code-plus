@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.3] - 2025-11-05
+- Fix: Allow top-level `return` and `await` in user code by wrapping
+  execution in an async IIFE inside the sandbox.
+- Dev: Rebuild package and prepare release.
+
 ## [0.1.2] - 2025-11-05
 - Docs: Revamp README with badges, installation/usage guides, and references.
 - Docs: Add `LICENSE.md` (MIT) and `CHANGELOG.md` to the package.
