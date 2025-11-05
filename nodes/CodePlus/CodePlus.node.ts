@@ -86,6 +86,18 @@ export class CodePlus implements INodeType {
     parameterPane: "wide",
     properties: [
       {
+        displayName: "Language",
+        name: "language",
+        type: "options",
+        noDataExpression: true,
+        options: [
+          { name: "JavaScript", value: "javaScript", action: "Code in JavaScript" },
+          { name: "Python (Beta)", value: "python", action: "Code in Python (Beta)" },
+          { name: "Python (Native) (Beta)", value: "pythonNative", action: "Code in Python (Native) (Beta)" },
+        ],
+        default: "javaScript",
+      },
+      {
         displayName: "Libraries",
         name: "libraries",
         type: "string",
@@ -122,12 +134,6 @@ export class CodePlus implements INodeType {
           { name: "n8n Code (compat)", value: "n8nCode", description: "Expose full items like the native Code node" },
         ],
         description: "Select how the code executes across input items.",
-      },
-      {
-        displayName: "Language",
-        name: "language",
-        type: "hidden",
-        default: "javaScript",
       },
       {
         displayName: "Options",
@@ -181,6 +187,7 @@ export class CodePlus implements INodeType {
     const returnData: INodeExecutionData[] = [];
 
     // Parameters
+    const language = this.getNodeParameter("language", 0, "javaScript") as string;
     const librariesRaw = this.getNodeParameter("libraries", 0, "") as string;
     const initCode = this.getNodeParameter("initCode", 0, "") as string;
     const code = this.getNodeParameter("code", 0) as string;
@@ -192,6 +199,18 @@ export class CodePlus implements INodeType {
     const clearCache = Boolean(options.clearCache);
     const forceReinstall = Boolean(options.forceReinstall);
     const preinstallOnly = Boolean(options.preinstallOnly);
+
+    // Gate non-JS language for now (Python shown in UI but not executed here)
+    if (language !== "javaScript") {
+      const msg =
+        language === "pythonNative"
+          ? "Python (Native) ยังไม่รองรับใน Code Plus. โปรดใช้ Code node ของ n8n หรือเลือก JavaScript."
+          : "Python ยังไม่รองรับใน Code Plus. โปรดใช้ Code node ของ n8n หรือเลือก JavaScript.";
+      if (this.continueOnFail()) {
+        return [[{ json: { error: msg, language } }]];
+      }
+      throw new NodeOperationError(this.getNode(), msg);
+    }
 
     // Prepare cache project
     try {

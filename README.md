@@ -12,7 +12,7 @@ Package: `@warnyin/n8n-nodes-code-plus`
 - Install npm libraries directly from the node UI (comma-separated or JSON array).
 - Cache libraries in a persistent directory for reuse and faster runs.
 - Optional Init Code that runs once before the main code.
-- Run modes: Per Item or Once.
+- Mode: Run Once for Each Item, Run Once for All Items, or n8n Code (compat).
 - Control Timeout, clear cache, and force reinstall.
 - Executes in a restricted VM with a custom `require` bound to the cache.
 
@@ -23,6 +23,7 @@ Documentation structure is inspired by the author’s Swagger API node for n8n [
 - Supports both comma-separated and JSON array input for libraries.
 - Persistent cache directory (default `~/.n8n/code-plus-cache`).
 - Select `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`.
+ - Language selector: JavaScript (Python options shown but currently unsupported in this node).
 - Safety and performance options: Timeout, Clear Cache, Force Reinstall, Preinstall Only.
 - `require()` is scoped to the cache directory for controlled loading.
 
@@ -61,6 +62,7 @@ npm link @warnyin/n8n-nodes-code-plus
 - `Init Code`: runs once before main code
 - `Main Code`: JavaScript where `require()` loads from the cache
 - `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`
+ - `Language`: `JavaScript` (Python options are visible but not supported in Code Plus)
 - `Options`:
   - `Cache Directory` (default: `~/.n8n/code-plus-cache`)
   - `Clear Cache Before Run`
@@ -117,6 +119,7 @@ return { generatedAt: dayjs().toISOString() };
 - `require()` is restricted to the cache; Node built-ins are accessible via the sandbox.
 - Avoid long-running or blocking code; configure `Timeout (ms)` appropriately.
 - Version `0.1.1` adjusted the build output so n8n loads from `dist/nodes/CodePlus/CodePlus.node.js`.
+ - Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
 
 ## Development
 ```bash
