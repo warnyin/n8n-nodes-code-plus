@@ -70,6 +70,63 @@ function installLibraries(cacheDir: string, libs: string[]): { success: boolean;
   return { success, output: (res.stdout || "") + (res.stderr || "") };
 }
 
+// Default main code used when the field is empty; also used for example replacement detection
+const DEFAULT_MAIN_CODE = "return { id: require('nanoid').nanoid(), input: item };";
+
+// Provide example snippets keyed by language and run mode
+function getExampleSnippets(language: string, runMode: string): {
+  libraries: string;
+  initCode: string;
+  code: string;
+} {
+  // JavaScript examples
+  if (language === "javaScript") {
+    switch (runMode) {
+      case "runOnceForEachItem":
+        return {
+          libraries: "",
+          initCode: "",
+          code: "// JS — Each item\nreturn { ...item, json: { ...item.json, processed: true } };",
+        };
+      case "n8nCode":
+        return {
+          libraries: "",
+          initCode: "",
+          code: "// JS — n8n Code (compat)\nfor (let i = 0; i < items.length; i++) {\n  items[i].json.processed = true;\n}\nreturn items;",
+        };
+      case "runOnceForAllItems":
+      default:
+        return {
+          libraries: "",
+          initCode: "",
+          code: "// JS — All items\nconst total = items.reduce((sum, x) => sum + (x.value || 0), 0);\nreturn { total };",
+        };
+    }
+  }
+  // Python examples (informational only; not executed here)
+  switch (runMode) {
+    case "runOnceForEachItem":
+      return {
+        libraries: "",
+        initCode: "",
+        code: "# Python — Each item\n# Not executed in Code Plus; example only.\nitem['processed'] = True\nreturn item",
+      };
+    case "n8nCode":
+      return {
+        libraries: "",
+        initCode: "",
+        code: "# Python — n8n Code (compat)\n# Not executed in Code Plus; example only.\nfor i in range(len(items)):\n    items[i]['json']['processed'] = True\nreturn items",
+      };
+    case "runOnceForAllItems":
+    default:
+      return {
+        libraries: "",
+        initCode: "",
+        code: "# Python — All items\n# Not executed in Code Plus; example only.\n total = sum([x.get('value', 0) for x in items])\nreturn {'total': total}",
+      };
+  }
+}
+
 export class CodePlus implements INodeType {
   description: INodeTypeDescription = {
     displayName: "Code Plus",
@@ -135,97 +192,6 @@ export class CodePlus implements INodeType {
         default: "return { id: require('nanoid').nanoid(), input: item };",
         description: "JavaScript executed per item or once, with custom require available.",
       },
-      // Auto-updated Examples based on Mode + Language (UI-only, not executed)
-      {
-        displayName: "Example",
-        name: "example_js_each",
-        type: "string",
-        typeOptions: { rows: 6 },
-        default:
-          "// JavaScript — Run Once for Each Item\nreturn { ...item, json: { ...item.json, processed: true } };",
-        description: "Auto-updated example for the selected Mode/Language.",
-        displayOptions: {
-          show: {
-            runMode: ["runOnceForEachItem"],
-            language: ["javaScript"],
-          },
-        },
-      },
-      {
-        displayName: "Example",
-        name: "example_js_all",
-        type: "string",
-        typeOptions: { rows: 6 },
-        default:
-          "// JavaScript — Run Once for All Items\nconst total = items.reduce((sum, x) => sum + (x.value || 0), 0);\nreturn { total };",
-        description: "Auto-updated example for the selected Mode/Language.",
-        displayOptions: {
-          show: {
-            runMode: ["runOnceForAllItems"],
-            language: ["javaScript"],
-          },
-        },
-      },
-      {
-        displayName: "Example",
-        name: "example_js_compat",
-        type: "string",
-        typeOptions: { rows: 6 },
-        default:
-          "// JavaScript — n8n Code (compat)\nfor (let i = 0; i < items.length; i++) {\n  items[i].json.processed = true;\n}\nreturn items;",
-        description: "Auto-updated example for the selected Mode/Language.",
-        displayOptions: {
-          show: {
-            runMode: ["n8nCode"],
-            language: ["javaScript"],
-          },
-        },
-      },
-      {
-        displayName: "Example",
-        name: "example_py_each",
-        type: "string",
-        typeOptions: { rows: 8 },
-        default:
-          "# Python — Run Once for Each Item\n# Note: Python is not executed in Code Plus.\n# This example is illustrative only.\nitem['processed'] = True\nreturn item",
-        description: "Auto-updated example for the selected Mode/Language.",
-        displayOptions: {
-          show: {
-            runMode: ["runOnceForEachItem"],
-            language: ["python", "pythonNative"],
-          },
-        },
-      },
-      {
-        displayName: "Example",
-        name: "example_py_all",
-        type: "string",
-        typeOptions: { rows: 8 },
-        default:
-          "# Python — Run Once for All Items\n# Note: Python is not executed in Code Plus.\n# This example is illustrative only.\n total = sum([x.get('value', 0) for x in items])\nreturn {'total': total}",
-        description: "Auto-updated example for the selected Mode/Language.",
-        displayOptions: {
-          show: {
-            runMode: ["runOnceForAllItems"],
-            language: ["python", "pythonNative"],
-          },
-        },
-      },
-      {
-        displayName: "Example",
-        name: "example_py_compat",
-        type: "string",
-        typeOptions: { rows: 8 },
-        default:
-          "# Python — n8n Code (compat)\n# Note: Python is not executed in Code Plus.\n# This example is illustrative only.\nfor i in range(len(items)):\n    items[i]['json']['processed'] = True\nreturn items",
-        description: "Auto-updated example for the selected Mode/Language.",
-        displayOptions: {
-          show: {
-            runMode: ["n8nCode"],
-            language: ["python", "pythonNative"],
-          },
-        },
-      },
       {
         displayName: "Options",
         name: "options",
@@ -286,9 +252,9 @@ export class CodePlus implements INodeType {
 
     // Parameters
     const language = this.getNodeParameter("language", 0, "javaScript") as string;
-    const librariesRaw = this.getNodeParameter("libraries", 0, "") as string;
-    const initCode = this.getNodeParameter("initCode", 0, "") as string;
-    const code = this.getNodeParameter("code", 0) as string;
+    const librariesRawInput = this.getNodeParameter("libraries", 0, "") as string;
+    const initCodeInput = this.getNodeParameter("initCode", 0, "") as string;
+    const codeInput = this.getNodeParameter("code", 0) as string;
     const runMode = this.getNodeParameter("runMode", 0, "runOnceForAllItems") as string;
     const options = this.getNodeParameter("options", 0, {}) as Record<string, any>;
 
@@ -298,6 +264,14 @@ export class CodePlus implements INodeType {
     const forceReinstall = Boolean(options.forceReinstall);
     const preinstallOnly = Boolean(options.preinstallOnly);
     const cacheTtlMinutes = Number(options.cacheTtlMinutes ?? 0);
+
+    // Auto-fill examples into Libraries / Init Code / Main Code
+    const examples = getExampleSnippets(language, runMode);
+    const librariesRaw = librariesRawInput?.trim().length ? librariesRawInput : examples.libraries;
+    const initCode = initCodeInput?.trim().length ? initCodeInput : examples.initCode;
+    const code = (!codeInput || !codeInput.trim().length || codeInput.trim() === DEFAULT_MAIN_CODE)
+      ? examples.code
+      : codeInput;
 
     // Gate non-JS language for now (Python shown in UI but not executed here)
     if (language !== "javaScript") {
