@@ -36,6 +36,11 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Impl: Track last selected `Mode`/`Language` in per-node meta to detect changes and trigger example replacement. Prevents stale examples and aligns behavior with user intent.
 - Build: Rebuild package.
 
+## [0.1.10] - 2025-11-05
+- Fix: In `n8n Code (compat)` mode, `$input.all()` now returns full items (with `.json`) and the main code runs once (not per item), matching native Code node semantics.
+- Docs: Add footer "Made with ❤️ for the n8n community" to README.
+- Build: Rebuild package.
+
 ## [0.1.3] - 2025-11-05
 - Fix: Allow top-level `return` and `await` in user code by wrapping
   execution in an async IIFE inside the sandbox.

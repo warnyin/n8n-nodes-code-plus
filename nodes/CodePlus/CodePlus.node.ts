@@ -300,6 +300,12 @@ export class CodePlus implements INodeType {
       librariesRaw = examples.libraries;
       initCode = examples.initCode;
       code = examples.code;
+      // Inform UI in manual runs that examples were applied due to Mode/Language change
+      if (this.getMode() === "manual") {
+        try {
+          this.sendMessageToUI({ type: "info", message: "Mode/Language changed: applied example Libraries/Init/Main" });
+        } catch {}
+      }
     } else {
       // Otherwise, assist only when fields are blank/default
       librariesRaw = librariesRawInput?.trim().length ? librariesRawInput : examples.libraries;
@@ -307,6 +313,11 @@ export class CodePlus implements INodeType {
       code = (!codeInput || !codeInput.trim().length || codeInput.trim() === DEFAULT_MAIN_CODE)
         ? examples.code
         : codeInput;
+      if (this.getMode() === "manual" && (!librariesRawInput?.trim().length || !initCodeInput?.trim().length || (!codeInput || !codeInput.trim().length || codeInput.trim() === DEFAULT_MAIN_CODE))) {
+        try {
+          this.sendMessageToUI({ type: "info", message: "Applied example defaults for blank/default fields" });
+        } catch {}
+      }
     }
 
     
