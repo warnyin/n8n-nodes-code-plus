@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.11] - 2025-11-05
+- UI: Show info messages in manual runs when example code is applied due to `Mode/Language` change or when fields are blank/default.
+- Impl: Example replacement remains runtime-only due to n8n editor parameter mutation limitations; meta tracking for `lastMode`/`lastLanguage` unchanged.
+- Build: Rebuild package.
+
 ## [0.1.4] - 2025-11-05
 - Feature: Add `Run Mode: n8n Code (compat)` to expose full item
   structures and accept native Code node-style returns (`items`, `{ json: ... }`).
