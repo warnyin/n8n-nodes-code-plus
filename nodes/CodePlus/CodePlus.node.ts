@@ -114,13 +114,20 @@ export class CodePlus implements INodeType {
         displayName: "Mode",
         name: "runMode",
         type: "options",
-        default: "perItem",
+        noDataExpression: true,
+        default: "runOnceForAllItems",
         options: [
-          { name: "Run Once for Each Item", value: "perItem", description: "Run this code as many times as there are input items" },
-          { name: "Run Once for All Items", value: "once", description: "Run this code only once, no matter how many input items there are" },
+          { name: "Run Once for All Items", value: "runOnceForAllItems", description: "Run this code only once, no matter how many input items there are" },
+          { name: "Run Once for Each Item", value: "runOnceForEachItem", description: "Run this code as many times as there are input items" },
           { name: "n8n Code (compat)", value: "n8nCode", description: "Expose full items like the native Code node" },
         ],
         description: "Select how the code executes across input items.",
+      },
+      {
+        displayName: "Language",
+        name: "language",
+        type: "hidden",
+        default: "javaScript",
       },
       {
         displayName: "Options",
@@ -177,7 +184,7 @@ export class CodePlus implements INodeType {
     const librariesRaw = this.getNodeParameter("libraries", 0, "") as string;
     const initCode = this.getNodeParameter("initCode", 0, "") as string;
     const code = this.getNodeParameter("code", 0) as string;
-    const runMode = this.getNodeParameter("runMode", 0, "perItem") as string;
+    const runMode = this.getNodeParameter("runMode", 0, "runOnceForAllItems") as string;
     const options = this.getNodeParameter("options", 0, {}) as Record<string, any>;
 
     const timeoutMs = Number(options.timeoutMs ?? 10000);
@@ -370,7 +377,7 @@ export class CodePlus implements INodeType {
       if (workflowMode === "manual") {
         this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
       }
-    } else if (runMode === "perItem") {
+    } else if (runMode === "runOnceForEachItem") {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         try {
@@ -407,7 +414,7 @@ export class CodePlus implements INodeType {
       if (workflowMode === "manual") {
         this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
       }
-    } else {
+    } else if (runMode === "runOnceForAllItems") {
       // Run once
       try {
         (context as any).items = items.map((x) => x.json);
@@ -433,6 +440,37 @@ export class CodePlus implements INodeType {
       }
       if (workflowMode === "manual") {
         this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
+      }
+    } else {
+      // Fallback to per-item behavior for unknown values
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        try {
+          (context as any).item = item.json;
+          (context as any).items = items.map((x) => x.json);
+          (context as any).index = i;
+          (context as any).$input.item = item.json;
+          const result = await Promise.resolve(
+            vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
+          );
+          if (Array.isArray(result)) {
+            for (const r of result) {
+              returnData.push({ json: r, pairedItem: { item: i } });
+            }
+          } else if (typeof result === "object" && result !== null) {
+            returnData.push({ json: result, pairedItem: { item: i } });
+          } else if (typeof result === "undefined") {
+            returnData.push({ json: item.json, pairedItem: { item: i } });
+          } else {
+            returnData.push({ json: { result }, pairedItem: { item: i } });
+          }
+        } catch (err) {
+          if (this.continueOnFail()) {
+            returnData.push({ json: { error: String(err) }, pairedItem: { item: i } });
+            continue;
+          }
+          throw new NodeOperationError(this.getNode(), String(err));
+        }
       }
     }
 
