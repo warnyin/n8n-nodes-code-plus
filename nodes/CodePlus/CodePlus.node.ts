@@ -86,6 +86,19 @@ export class CodePlus implements INodeType {
     parameterPane: "wide",
     properties: [
       {
+        displayName: "Mode",
+        name: "runMode",
+        type: "options",
+        noDataExpression: true,
+        default: "runOnceForAllItems",
+        options: [
+          { name: "Run Once for All Items", value: "runOnceForAllItems", description: "Run this code only once, no matter how many input items there are" },
+          { name: "Run Once for Each Item", value: "runOnceForEachItem", description: "Run this code as many times as there are input items" },
+          { name: "n8n Code (compat)", value: "n8nCode", description: "Expose full items like the native Code node" },
+        ],
+        description: "Select how the code executes across input items.",
+      },
+      {
         displayName: "Language",
         name: "language",
         type: "options",
@@ -122,18 +135,96 @@ export class CodePlus implements INodeType {
         default: "return { id: require('nanoid').nanoid(), input: item };",
         description: "JavaScript executed per item or once, with custom require available.",
       },
+      // Auto-updated Examples based on Mode + Language (UI-only, not executed)
       {
-        displayName: "Mode",
-        name: "runMode",
-        type: "options",
-        noDataExpression: true,
-        default: "runOnceForAllItems",
-        options: [
-          { name: "Run Once for All Items", value: "runOnceForAllItems", description: "Run this code only once, no matter how many input items there are" },
-          { name: "Run Once for Each Item", value: "runOnceForEachItem", description: "Run this code as many times as there are input items" },
-          { name: "n8n Code (compat)", value: "n8nCode", description: "Expose full items like the native Code node" },
-        ],
-        description: "Select how the code executes across input items.",
+        displayName: "Example",
+        name: "example_js_each",
+        type: "string",
+        typeOptions: { rows: 6 },
+        default:
+          "// JavaScript — Run Once for Each Item\nreturn { ...item, json: { ...item.json, processed: true } };",
+        description: "Auto-updated example for the selected Mode/Language.",
+        displayOptions: {
+          show: {
+            runMode: ["runOnceForEachItem"],
+            language: ["javaScript"],
+          },
+        },
+      },
+      {
+        displayName: "Example",
+        name: "example_js_all",
+        type: "string",
+        typeOptions: { rows: 6 },
+        default:
+          "// JavaScript — Run Once for All Items\nconst total = items.reduce((sum, x) => sum + (x.value || 0), 0);\nreturn { total };",
+        description: "Auto-updated example for the selected Mode/Language.",
+        displayOptions: {
+          show: {
+            runMode: ["runOnceForAllItems"],
+            language: ["javaScript"],
+          },
+        },
+      },
+      {
+        displayName: "Example",
+        name: "example_js_compat",
+        type: "string",
+        typeOptions: { rows: 6 },
+        default:
+          "// JavaScript — n8n Code (compat)\nfor (let i = 0; i < items.length; i++) {\n  items[i].json.processed = true;\n}\nreturn items;",
+        description: "Auto-updated example for the selected Mode/Language.",
+        displayOptions: {
+          show: {
+            runMode: ["n8nCode"],
+            language: ["javaScript"],
+          },
+        },
+      },
+      {
+        displayName: "Example",
+        name: "example_py_each",
+        type: "string",
+        typeOptions: { rows: 8 },
+        default:
+          "# Python — Run Once for Each Item\n# Note: Python is not executed in Code Plus.\n# This example is illustrative only.\nitem['processed'] = True\nreturn item",
+        description: "Auto-updated example for the selected Mode/Language.",
+        displayOptions: {
+          show: {
+            runMode: ["runOnceForEachItem"],
+            language: ["python", "pythonNative"],
+          },
+        },
+      },
+      {
+        displayName: "Example",
+        name: "example_py_all",
+        type: "string",
+        typeOptions: { rows: 8 },
+        default:
+          "# Python — Run Once for All Items\n# Note: Python is not executed in Code Plus.\n# This example is illustrative only.\n total = sum([x.get('value', 0) for x in items])\nreturn {'total': total}",
+        description: "Auto-updated example for the selected Mode/Language.",
+        displayOptions: {
+          show: {
+            runMode: ["runOnceForAllItems"],
+            language: ["python", "pythonNative"],
+          },
+        },
+      },
+      {
+        displayName: "Example",
+        name: "example_py_compat",
+        type: "string",
+        typeOptions: { rows: 8 },
+        default:
+          "# Python — n8n Code (compat)\n# Note: Python is not executed in Code Plus.\n# This example is illustrative only.\nfor i in range(len(items)):\n    items[i]['json']['processed'] = True\nreturn items",
+        description: "Auto-updated example for the selected Mode/Language.",
+        displayOptions: {
+          show: {
+            runMode: ["n8nCode"],
+            language: ["python", "pythonNative"],
+          },
+        },
       },
       {
         displayName: "Options",
