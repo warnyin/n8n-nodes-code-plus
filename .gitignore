@@ -27,3 +27,6 @@ tmp/
 
 # Secrets
 .npmrc
+
+# Example
+Example.ts
