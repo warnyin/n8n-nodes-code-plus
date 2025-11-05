@@ -1,6 +1,6 @@
 {
-  "name": "n8n-nodes-code-plus",
-  "version": "0.1.0",
+  "name": "@warnyin/n8n-nodes-code-plus",
+  "version": "0.1.2",
   "description": "n8n node that runs user code with installable cached libraries",
   "license": "MIT",
   "author": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://example.com/n8n-nodes-code-plus.git"
+    "url": "git+https://github.com/warnyin/n8n-nodes-code-plus.git"
   },
   "keywords": [
     "n8n-community-node-package",
@@ -33,6 +33,9 @@
     "README.md",
     "LICENSE.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "n8n": {
     "n8nNodesApiVersion": 1,
     "nodes": [

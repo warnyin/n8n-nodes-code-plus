@@ -4,6 +4,7 @@
     "target": "es2017",
     "lib": ["es2017"],
     "types": ["node"],
+    "rootDir": ".",
     "declaration": true,
     "outDir": "./dist",
     "strict": true,
