@@ -31,6 +31,11 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Impl: Example snippets depend on `Mode` and `Language`. JavaScript examples execute; Python/Python (Native) examples are informational only and execution remains gated to JavaScript.
 - Build: Rebuild package.
 
+## [0.1.9] - 2025-11-05
+- Policy: Always overwrite `Libraries`, `Init Code`, and `Main Code` with contextual examples whenever `Mode` or `Language` changes.
+- Impl: Track last selected `Mode`/`Language` in per-node meta to detect changes and trigger example replacement. Prevents stale examples and aligns behavior with user intent.
+- Build: Rebuild package.
+
 ## [0.1.3] - 2025-11-05
 - Fix: Allow top-level `return` and `await` in user code by wrapping
   execution in an async IIFE inside the sandbox.
