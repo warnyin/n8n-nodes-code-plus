@@ -119,7 +119,56 @@ return { generatedAt: dayjs().toISOString() };
 - `require()` is restricted to the cache; Node built-ins are accessible via the sandbox.
 - Avoid long-running or blocking code; configure `Timeout (ms)` appropriately.
 - Version `0.1.1` adjusted the build output so n8n loads from `dist/nodes/CodePlus/CodePlus.node.js`.
- - Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
+- Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
+
+## Roadmap
+- Near-term (0.1.x)
+  - Publish `0.1.6` to npm พร้อมรายละเอียด Language selector
+  - เพิ่มตัวเลือกใน UI เพื่อเปิด/ปิด stdout (แทน `CODE_ENABLE_STDOUT` env var)
+  - ขยายเอกสาร `$input` และ console forwarding พร้อมตัวอย่าง/ภาพหน้าจอ
+  - ทบทวนค่า Default ของ `Mode` ให้สอดคล้องกับ Code node
+  - เพิ่ม Concurrency control สำหรับโหมด `Run Once for Each Item`
+  - ปรับปรุงข้อความ error ให้เป็น i18n (ไทย/อังกฤษ) และมีรายละเอียดเชิงโครงสร้าง
+
+- Python Support
+  - รองรับการรัน Python ผ่าน `venv + pip` และ cache ต่อ node
+  - จัดการ cross-platform (Windows/Linux/macOS) และแพ็กเกจที่เป็น compiled wheels
+  - เพิ่ม safe execution (timeouts, memory limit) และ sanitize imports
+  - โหมด `Python (Native)` ด้วย Pyodide เป็นทางเลือกเมื่อไม่มี system Python
+  - เพิ่ม editor ที่รู้ภาษา: syntax highlight/linting สำหรับ Python
+
+- Execution & Security
+  - เพิ่ม allowlist/denylist ให้กับ `require()`
+  - โหมด offline และสแกน dependency whitelist; ตรวจสอบ integrity ด้วย lockfile
+  - จำกัดทรัพยากร (CPU/Memory) และปรับ concurrency ได้
+  - เสริม sandbox และจำกัด globals ที่เข้าถึงได้
+
+- Features & Compatibility
+  - รองรับ multiple outputs และ binary data
+  - ขยาย `$input` (เช่น `first`, `pairedItem`) ให้ parity กับ Code node
+  - แสดงรายชื่อและเวอร์ชันของไลบรารีที่ติดตั้งใน UI; เพิ่มปุ่ม upgrade/remove
+  - รองรับ proxy และ custom registry สำหรับการติดตั้ง
+
+- UX & Developer Experience
+  - เพิ่ม template/snippet library ใน editor
+  - Auto-complete สำหรับ `require()` จากไลบรารีที่ติดตั้ง
+  - โหมด debug พร้อม step logging และ timing
+  - CLI สำหรับ preinstall/prune cache
+  - เพิ่ม unit/integration tests และ example workflows แบบครบชุด
+
+- Docs & Community
+  - คู่มือ migration จาก Code node
+  - API reference สำหรับ helpers และ `$input`
+  - Contribution guide, code style, issue templates
+  - Security policy และ responsible disclosure
+
+- Monitoring
+  - Telemetry แบบ opt-in และ anonymized usage metrics
+  - Log viewer UI พร้อมตัวกรองและ export
+
+- Performance
+  - กลยุทธ์ cache warm-up และ TTL
+  - Prebundle ไลบรารีที่ใช้บ่อยเพื่อลด cold-start
 
 ## Development
 ```bash
