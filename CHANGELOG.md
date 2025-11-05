@@ -20,6 +20,12 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Docs: Update README to describe the `Language` option and Python limitation.
 - Build: Rebuild package.
 
+## [0.1.7] - 2025-11-05
+- Feature: Add `Cache TTL (minutes)` option to automatically clear cached `node_modules` after a configurable lifetime. Keeps memory usage fresh by pruning and reinstalling dependencies on the next run post-TTL.
+- Impl: Store last install timestamp in `.code-plus-meta.json` and clear cache based on TTL before execution.
+- Docs: Update README to document the new option and its behavior.
+- Build: Rebuild package.
+
 ## [0.1.3] - 2025-11-05
 - Fix: Allow top-level `return` and `await` in user code by wrapping
   execution in an async IIFE inside the sandbox.

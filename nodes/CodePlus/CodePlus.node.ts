@@ -6,7 +6,7 @@ import {
   NodeOperationError,
 } from "n8n-workflow";
 
-import { existsSync, mkdirSync, writeFileSync, rmSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "fs";
 import path from "path";
 import os from "os";
 import { spawnSync } from "child_process";
@@ -164,19 +164,26 @@ export class CodePlus implements INodeType {
             description: "Install libraries even if already present in cache.",
           },
           {
-            displayName: "Timeout (ms)",
-            name: "timeoutMs",
-            type: "number",
-            default: 10000,
-            description: "Max execution time for init/main code.",
-          },
-          {
-            displayName: "Preinstall Only",
-            name: "preinstallOnly",
-            type: "boolean",
-            default: false,
-            description: "Install libraries without running any code.",
-          },
+        displayName: "Timeout (ms)",
+        name: "timeoutMs",
+        type: "number",
+        default: 10000,
+        description: "Max execution time for init/main code.",
+      },
+      {
+        displayName: "Cache TTL (minutes)",
+        name: "cacheTtlMinutes",
+        type: "number",
+        default: 0,
+        description: "Auto-clear installed libraries after this lifetime. Set 0 to disable.",
+      },
+      {
+        displayName: "Preinstall Only",
+        name: "preinstallOnly",
+        type: "boolean",
+        default: false,
+        description: "Install libraries without running any code.",
+      },
         ],
       },
     ],
@@ -199,6 +206,7 @@ export class CodePlus implements INodeType {
     const clearCache = Boolean(options.clearCache);
     const forceReinstall = Boolean(options.forceReinstall);
     const preinstallOnly = Boolean(options.preinstallOnly);
+    const cacheTtlMinutes = Number(options.cacheTtlMinutes ?? 0);
 
     // Gate non-JS language for now (Python shown in UI but not executed here)
     if (language !== "javaScript") {
@@ -214,6 +222,29 @@ export class CodePlus implements INodeType {
 
     // Prepare cache project
     try {
+      // TTL-based cache clearing
+      if (!clearCache && cacheTtlMinutes > 0) {
+        const nm = path.join(cacheDir, "node_modules");
+        const metaFile = path.join(cacheDir, ".code-plus-meta.json");
+        let lastInstallAt = 0;
+        try {
+          if (existsSync(metaFile)) {
+            const metaRaw = readFileSync(metaFile, "utf-8");
+            const meta = JSON.parse(metaRaw || "{}");
+            lastInstallAt = Number(meta.lastInstallAt ?? 0);
+          }
+        } catch {}
+        const ttlMs = cacheTtlMinutes * 60 * 1000;
+        if (lastInstallAt > 0 && Date.now() - lastInstallAt > ttlMs) {
+          if (existsSync(nm)) rmSync(nm, { recursive: true, force: true });
+          // Inform UI in manual mode
+          if (this.getMode() === "manual") {
+            try {
+              this.sendMessageToUI({ type: "info", message: `Cache TTL exceeded (${cacheTtlMinutes}m): cleared node_modules` });
+            } catch {}
+          }
+        }
+      }
       if (clearCache) {
         const nm = path.join(cacheDir, "node_modules");
         if (existsSync(nm)) rmSync(nm, { recursive: true, force: true });
@@ -244,6 +275,13 @@ export class CodePlus implements INodeType {
           }
           throw new NodeOperationError(this.getNode(), `Library installation failed: ${output}`);
         }
+        // Update cache meta with last install timestamp
+        try {
+          const metaFile = path.join(cacheDir, ".code-plus-meta.json");
+          const prev = existsSync(metaFile) ? JSON.parse(readFileSync(metaFile, "utf-8") || "{}") : {};
+          const next = { ...prev, lastInstallAt: Date.now() };
+          writeFileSync(metaFile, JSON.stringify(next));
+        } catch {}
       }
     } catch (err) {
       throw new NodeOperationError(this.getNode(), `Failed to install libraries: ${String(err)}`);

@@ -68,6 +68,7 @@ npm link @warnyin/n8n-nodes-code-plus
   - `Clear Cache Before Run`
   - `Force Reinstall`
   - `Timeout (ms)`
+  - `Cache TTL (minutes)`
   - `Preinstall Only`
 
 ### Quick Start
@@ -135,6 +136,7 @@ return { json: { ok: true } };
 - `Clear Cache Before Run`: Remove cached modules before reinstalling.
 - `Force Reinstall`: Reinstall libraries regardless of presence.
 - `Timeout (ms)`: Max execution time for init/main code.
+- `Cache TTL (minutes)`: Automatically clears installed libraries when the last install time exceeds this TTL. Set `0` to disable. Useful to keep memory fresh by re-installing daily or after fixed periods.
 - `Preinstall Only`: Install libraries and return a summary without running code.
 
 ### Execution Context
