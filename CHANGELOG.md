@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.12] - 2025-11-05
+- UI: `Main Code` now has a dynamic default expression that re-applies contextual examples based on `Language` and `Mode` when using the field’s menu (`⋯`) → `Reset Value`.
+- Docs: README explains how to use `Reset Value` to reapply examples.
+- Build: Rebuild package.
+
 ## [0.1.11] - 2025-11-05
 - UI: Show info messages in manual runs when example code is applied due to `Mode/Language` change or when fields are blank/default.
 - Impl: Example replacement remains runtime-only due to n8n editor parameter mutation limitations; meta tracking for `lastMode`/`lastLanguage` unchanged.

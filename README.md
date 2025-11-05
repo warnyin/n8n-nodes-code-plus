@@ -61,6 +61,7 @@ npm link @warnyin/n8n-nodes-code-plus
 - `Libraries`: e.g. `nanoid@latest,lodash` or `["nanoid","dayjs@^1"]`
 - `Init Code`: runs once before main code
 - `Main Code`: JavaScript where `require()` loads from the cache
+- Tip: Use the field’s menu (`⋯`) → `Reset Value` to reapply example code for the current `Language` and `Mode`.
 - `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`
  - `Language`: `JavaScript` (Python options are visible but not supported in Code Plus)
 - `Options`:

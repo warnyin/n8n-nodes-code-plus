@@ -189,8 +189,9 @@ export class CodePlus implements INodeType {
         name: "code",
         type: "string",
         typeOptions: { rows: 8 },
-        default: "return { id: require('nanoid').nanoid(), input: item };",
-        description: "JavaScript executed per item or once, with custom require available.",
+        // Dynamic default: examples vary by Language and Mode. Use Reset Value to reapply.
+        default: "={{ (() => { const m = $parameter.runMode; const l = $parameter.language; if (l === 'javaScript') { if (m === 'runOnceForEachItem') return `// JS — Each item\\nreturn { ...item, json: { ...item.json, processed: true } };`; if (m === 'n8nCode') return `// JS — n8n Code (compat)\\nfor (let i = 0; i < items.length; i++) {\\n  items[i].json.processed = true;\\n}\\nreturn items;`; return `// JS — All items\\nconst total = items.reduce((sum, x) => sum + (x.value || 0), 0);\\nreturn { total };`; } else { if (m === 'runOnceForEachItem') return `# Python — Each item\\n# Not executed in Code Plus; example only.\\nitem['processed'] = True\\nreturn item`; if (m === 'n8nCode') return `# Python — n8n Code (compat)\\n# Not executed in Code Plus; example only.\\nfor i in range(len(items)):\\n    items[i]['processed'] = True\\nreturn items`; return `# Python — All items\\n# Not executed in Code Plus; example only.\\ntotal = sum([x.get('value', 0) for x in items])\\nreturn { 'total': total }`; } })() }}",
+        description: "JavaScript executed per item or once, with custom require available. Tip: click the field’s three dots → Reset Value to reapply examples for the current Language/Mode.",
       },
       {
         displayName: "Options",
