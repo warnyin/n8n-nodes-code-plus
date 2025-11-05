@@ -83,6 +83,7 @@ export class CodePlus implements INodeType {
     },
     inputs: ["main"],
     outputs: ["main"],
+    parameterPane: "wide",
     properties: [
       {
         displayName: "Libraries",
@@ -230,15 +231,84 @@ export class CodePlus implements INodeType {
     // Create a custom require bound to cacheDir
     const customRequire = createRequire(path.join(cacheDir, "index.js"));
 
+    // Setup console forwarding similar to native Code node
+    const workflowMode = this.getMode();
+    const nodeName = this.getNode().name;
+    const wfId = this.getWorkflow().id;
+    const CODE_ENABLE_STDOUT = (process.env as any).CODE_ENABLE_STDOUT;
+
+    const pref = `[Workflow "${wfId}"][Node "${nodeName}"]`;
+    const forwardToUI = (method: string, args: any[]) => {
+      try {
+        // Send structured message to UI in manual mode
+        this.sendMessageToUI({ type: "console", level: method, message: args.map((a) => String(a)).join(" ") });
+      } catch {
+        // Fallback: ignore
+      }
+    };
+    const forwardToStdout = (method: string, args: any[]) => {
+      const base = `${pref}`;
+      switch (method) {
+        case "log":
+          console.log(base, ...args);
+          break;
+        case "info":
+          console.info(base, ...args);
+          break;
+        case "warn":
+          console.warn(base, ...args);
+          break;
+        case "error":
+          console.error(base, ...args);
+          break;
+        default:
+          console.log(base, ...args);
+      }
+    };
+    const contextConsole = {
+      log: (...args: any[]) =>
+        workflowMode === "manual"
+          ? forwardToUI("log", args)
+          : CODE_ENABLE_STDOUT === "true"
+          ? forwardToStdout("log", args)
+          : undefined,
+      info: (...args: any[]) =>
+        workflowMode === "manual"
+          ? forwardToUI("info", args)
+          : CODE_ENABLE_STDOUT === "true"
+          ? forwardToStdout("info", args)
+          : undefined,
+      warn: (...args: any[]) =>
+        workflowMode === "manual"
+          ? forwardToUI("warn", args)
+          : CODE_ENABLE_STDOUT === "true"
+          ? forwardToStdout("warn", args)
+          : undefined,
+      error: (...args: any[]) =>
+        workflowMode === "manual"
+          ? forwardToUI("error", args)
+          : CODE_ENABLE_STDOUT === "true"
+          ? forwardToStdout("error", args)
+          : undefined,
+    };
+
+    // Provide minimal $input helper similar to native Code node
+    const inputHelper: any = {
+      all: () => items.map((x) => x.json),
+      item: undefined,
+    };
+
     // Setup VM context
     const context = vm.createContext({
       require: customRequire,
-      console,
+      console: contextConsole,
       Buffer,
       setTimeout,
       setInterval,
       clearTimeout,
       clearInterval,
+      $input: inputHelper,
+      helpers: this.helpers,
     });
 
     // Run init code once if provided
@@ -264,6 +334,7 @@ export class CodePlus implements INodeType {
           (context as any).item = item;
           (context as any).items = items;
           (context as any).index = i;
+          (context as any).$input.item = item;
 
           const result = await Promise.resolve(
             vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
@@ -295,6 +366,10 @@ export class CodePlus implements INodeType {
           throw new NodeOperationError(this.getNode(), String(err));
         }
       }
+      // Post-execution info in manual mode
+      if (workflowMode === "manual") {
+        this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
+      }
     } else if (runMode === "perItem") {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -303,6 +378,7 @@ export class CodePlus implements INodeType {
           (context as any).item = item.json;
           (context as any).items = items.map((x) => x.json);
           (context as any).index = i;
+          (context as any).$input.item = item.json;
 
           const result = await Promise.resolve(
             vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
@@ -328,10 +404,14 @@ export class CodePlus implements INodeType {
           throw new NodeOperationError(this.getNode(), String(err));
         }
       }
+      if (workflowMode === "manual") {
+        this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
+      }
     } else {
       // Run once
       try {
         (context as any).items = items.map((x) => x.json);
+        (context as any).$input.item = items[0]?.json;
         const result = await Promise.resolve(
           vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
         );
@@ -350,6 +430,9 @@ export class CodePlus implements INodeType {
           return [[{ json: { error: String(err) } }]];
         }
         throw new NodeOperationError(this.getNode(), String(err));
+      }
+      if (workflowMode === "manual") {
+        this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
       }
     }
 
