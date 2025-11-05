@@ -110,16 +110,16 @@ export class CodePlus implements INodeType {
         description: "JavaScript executed per item or once, with custom require available.",
       },
       {
-        displayName: "Run Mode",
+        displayName: "Mode",
         name: "runMode",
         type: "options",
         default: "perItem",
         options: [
-          { name: "Per Item", value: "perItem" },
-          { name: "Once", value: "once" },
-          { name: "n8n Code (compat)", value: "n8nCode" },
+          { name: "Run Once for Each Item", value: "perItem", description: "Run this code as many times as there are input items" },
+          { name: "Run Once for All Items", value: "once", description: "Run this code only once, no matter how many input items there are" },
+          { name: "n8n Code (compat)", value: "n8nCode", description: "Expose full items like the native Code node" },
         ],
-        description: "Execute code for each input item or a single time.",
+        description: "Select how the code executes across input items.",
       },
       {
         displayName: "Options",

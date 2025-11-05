@@ -22,8 +22,7 @@ Documentation structure is inspired by the author’s Swagger API node for n8n [
 - On-the-fly npm dependency installation.
 - Supports both comma-separated and JSON array input for libraries.
 - Persistent cache directory (default `~/.n8n/code-plus-cache`).
-- Select `Run Mode`: `Per Item` or `Once`.
-- Select `Run Mode`: `Per Item`, `Once`, or `n8n Code (compat)`.
+- Select `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`.
 - Safety and performance options: Timeout, Clear Cache, Force Reinstall, Preinstall Only.
 - `require()` is scoped to the cache directory for controlled loading.
 
@@ -61,7 +60,7 @@ npm link @warnyin/n8n-nodes-code-plus
 - `Libraries`: e.g. `nanoid@latest,lodash` or `["nanoid","dayjs@^1"]`
 - `Init Code`: runs once before main code
 - `Main Code`: JavaScript where `require()` loads from the cache
-- `Run Mode`: `Per Item` or `Once`
+- `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`
 - `Options`:
   - `Cache Directory` (default: `~/.n8n/code-plus-cache`)
   - `Clear Cache Before Run`
@@ -79,7 +78,7 @@ return { id: nanoid(), input: item };
 ### n8n Code (compat) examples
 - Modify items in-place like the native Code node:
 ```js
-// Run Mode: n8n Code (compat)
+// Mode: n8n Code (compat)
 for (let i = 0; i < items.length; i++) {
   items[i].json.idx = i;
 }
@@ -88,7 +87,7 @@ return items;
 
 - Return a single item object with `json`:
 ```js
-// Run Mode: n8n Code (compat)
+// Mode: n8n Code (compat)
 return { json: { ok: true } };
 ```
 

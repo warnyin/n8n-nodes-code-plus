@@ -9,6 +9,10 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
   structures and accept native Code node-style returns (`items`, `{ json: ... }`).
 - Docs: Update README with compatibility examples.
 
+## [0.1.5] - 2025-11-05
+- UI: Rename parameter label from `Run Mode` to `Mode` to align with native
+  Code node terminology. Option labels updated for clarity.
+
 ## [0.1.3] - 2025-11-05
 - Fix: Allow top-level `return` and `await` in user code by wrapping
   execution in an async IIFE inside the sandbox.
