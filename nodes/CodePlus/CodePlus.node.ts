@@ -466,9 +466,11 @@ export class CodePlus implements INodeType {
           : undefined,
     };
 
-    // Provide minimal $input helper similar to native Code node
+    // Provide $input helper similar to native Code node
+    // - In compat mode, return full items (with `.json`), matching native Code node
+    // - In other modes, return only JSON objects for convenience
     const inputHelper: any = {
-      all: () => items.map((x) => x.json),
+      all: () => (runMode === "n8nCode" ? items : items.map((x) => x.json)),
       item: undefined,
     };
 
@@ -501,44 +503,40 @@ export class CodePlus implements INodeType {
     // Execute main code
     const wrappedMainCode = wrapAsyncIIFE(code);
     if (runMode === "n8nCode") {
-      // Compatibility mode: expose full items (INodeExecutionData) like n8n Code node
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        try {
-          (context as any).item = item;
-          (context as any).items = items;
-          (context as any).index = i;
-          (context as any).$input.item = item;
+      // Compatibility mode: run once and expose full items like native Code node
+      try {
+        (context as any).items = items;
+        (context as any).item = items[0];
+        (context as any).index = 0;
+        (context as any).$input.item = items[0];
 
-          const result = await Promise.resolve(
-            vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
-          );
+        const result = await Promise.resolve(
+          vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
+        );
 
-          if (Array.isArray(result)) {
-            for (const r of result) {
-              if (r && typeof r === "object" && "json" in r) {
-                returnData.push({ ...(r as any), pairedItem: { item: i } });
-              } else {
-                returnData.push({ json: r as any, pairedItem: { item: i } });
-              }
+        if (Array.isArray(result)) {
+          for (const r of result) {
+            if (r && typeof r === "object" && "json" in r) {
+              returnData.push({ ...(r as any) });
+            } else {
+              returnData.push({ json: r as any });
             }
-          } else if (result && typeof result === "object" && "json" in (result as any)) {
-            returnData.push({ ...(result as any), pairedItem: { item: i } });
-          } else if (typeof result === "object" && result !== null) {
-            returnData.push({ json: result as any, pairedItem: { item: i } });
-          } else if (typeof result === "undefined") {
-            // passthrough original item structure
-            returnData.push({ ...item, pairedItem: { item: i } });
-          } else {
-            returnData.push({ json: { result }, pairedItem: { item: i } });
           }
-        } catch (err) {
-          if (this.continueOnFail()) {
-            returnData.push({ json: { error: String(err) }, pairedItem: { item: i } });
-            continue;
-          }
-          throw new NodeOperationError(this.getNode(), String(err));
+        } else if (result && typeof result === "object" && "json" in (result as any)) {
+          returnData.push({ ...(result as any) });
+        } else if (typeof result === "object" && result !== null) {
+          returnData.push({ json: result as any });
+        } else if (typeof result === "undefined") {
+          // passthrough original items
+          for (const it of items) returnData.push({ ...it });
+        } else {
+          returnData.push({ json: { result } });
         }
+      } catch (err) {
+        if (this.continueOnFail()) {
+          return [[{ json: { error: String(err) } }]];
+        }
+        throw new NodeOperationError(this.getNode(), String(err));
       }
       // Post-execution info in manual mode
       if (workflowMode === "manual") {

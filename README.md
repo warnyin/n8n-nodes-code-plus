@@ -199,6 +199,10 @@ return { generatedAt: dayjs().toISOString() };
 - Version `0.1.1` adjusted the build output so n8n loads from `dist/nodes/CodePlus/CodePlus.node.js`.
 - Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
 
+---
+
+Made with ❤️ for the n8n community
+
 ## Roadmap
 - Recent
   - 0.1.7 shipped: Cache TTL (minutes) — auto-prunes cached `node_modules` after a configurable lifetime and reinstalls on the next run.
