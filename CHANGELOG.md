@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.13] - 2025-11-05
+- **Major Refactor**: Implemented proper field separation by language using `displayOptions`.
+- **UI**: Fields now automatically switch when toggling between JavaScript and Python languages.
+- **Architecture**: Separated field definitions into `JavascriptCodeDescription.ts` and `PythonCodeDescription.ts`.
+- **Code Quality**: Removed complex dynamic default logic (~60 lines) and example snippet generation system.
+- **Fixes**: 
+  - Fixed parameter references throughout (runMode → mode)
+  - Added proper code editor support (codeNodeEditor)
+  - Language-specific fields now show/hide correctly based on selection
+- **Cleanup**: Removed backup and temporary files from repository.
+- **Build**: Complete rebuild with streamlined codebase (reduced from 659 to 492 lines).
+
 ## [0.1.12] - 2025-11-05
 - UI: `Main Code` now has a dynamic default expression that re-applies contextual examples based on `Language` and `Mode` when using the field’s menu (`⋯`) → `Reset Value`.
 - Docs: README explains how to use `Reset Value` to reapply examples.

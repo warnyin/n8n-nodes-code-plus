@@ -58,12 +58,14 @@ npm link @warnyin/n8n-nodes-code-plus
 
 ## Usage
 ### Main Parameters
+- `Language`: Select between `JavaScript`, `Python`, or `Python (Native)`. **Note**: Currently only JavaScript is fully supported for execution.
 - `Libraries`: e.g. `nanoid@latest,lodash` or `["nanoid","dayjs@^1"]`
-- `Init Code`: runs once before main code
-- `Main Code`: JavaScript where `require()` loads from the cache
-- Tip: Use the field’s menu (`⋯`) → `Reset Value` to reapply example code for the current `Language` and `Mode`.
+- `Init Code`: runs once before main code (language-specific field)
+- `Main Code`: JavaScript or Python code where `require()` loads from the cache (language-specific field)
+- **Important**: Fields automatically switch based on selected language using displayOptions:
+  - JavaScript: Shows `Libraries`, `Init Code (JavaScript)`, and `JavaScript` fields
+  - Python: Shows `Libraries`, `Init Code (Python)`, and `Python` fields
 - `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`
- - `Language`: `JavaScript` (Python options are visible but not supported in Code Plus)
 - `Options`:
   - `Cache Directory` (default: `~/.n8n/code-plus-cache`)
   - `Clear Cache Before Run`

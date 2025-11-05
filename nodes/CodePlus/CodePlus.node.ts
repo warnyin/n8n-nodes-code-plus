@@ -1,17 +1,20 @@
-import {
-  IExecuteFunctions,
-  INodeExecutionData,
-  INodeType,
-  INodeTypeDescription,
-  NodeOperationError,
-} from "n8n-workflow";
+import type {
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeDescription,
+} from 'n8n-workflow';
+import { NodeOperationError } from 'n8n-workflow';
 
-import { existsSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "fs";
-import path from "path";
-import os from "os";
-import { spawnSync } from "child_process";
-import { createRequire } from "module";
-import * as vm from "vm";
+import { existsSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+import * as vm from 'node:vm';
+
+import { javascriptCodeDescription } from './descriptions/JavascriptCodeDescription';
+import { pythonCodeDescription } from './descriptions/PythonCodeDescription';
 
 function defaultCacheDir(): string {
   return path.join(os.homedir(), ".n8n", "code-plus-cache");
@@ -70,63 +73,6 @@ function installLibraries(cacheDir: string, libs: string[]): { success: boolean;
   return { success, output: (res.stdout || "") + (res.stderr || "") };
 }
 
-// Default main code used when the field is empty; also used for example replacement detection
-const DEFAULT_MAIN_CODE = "return { id: require('nanoid').nanoid(), input: item };";
-
-// Provide example snippets keyed by language and run mode
-function getExampleSnippets(language: string, runMode: string): {
-  libraries: string;
-  initCode: string;
-  code: string;
-} {
-  // JavaScript examples
-  if (language === "javaScript") {
-    switch (runMode) {
-      case "runOnceForEachItem":
-        return {
-          libraries: "",
-          initCode: "",
-          code: "// JS — Each item\nreturn { ...item, json: { ...item.json, processed: true } };",
-        };
-      case "n8nCode":
-        return {
-          libraries: "",
-          initCode: "",
-          code: "// JS — n8n Code (compat)\nfor (let i = 0; i < items.length; i++) {\n  items[i].json.processed = true;\n}\nreturn items;",
-        };
-      case "runOnceForAllItems":
-      default:
-        return {
-          libraries: "",
-          initCode: "",
-          code: "// JS — All items\nconst total = items.reduce((sum, x) => sum + (x.value || 0), 0);\nreturn { total };",
-        };
-    }
-  }
-  // Python examples (informational only; not executed here)
-  switch (runMode) {
-    case "runOnceForEachItem":
-      return {
-        libraries: "",
-        initCode: "",
-        code: "# Python — Each item\n# Not executed in Code Plus; example only.\nitem['processed'] = True\nreturn item",
-      };
-    case "n8nCode":
-      return {
-        libraries: "",
-        initCode: "",
-        code: "# Python — n8n Code (compat)\n# Not executed in Code Plus; example only.\nfor i in range(len(items)):\n    items[i]['json']['processed'] = True\nreturn items",
-      };
-    case "runOnceForAllItems":
-    default:
-      return {
-        libraries: "",
-        initCode: "",
-        code: "# Python — All items\n# Not executed in Code Plus; example only.\n total = sum([x.get('value', 0) for x in items])\nreturn {'total': total}",
-      };
-  }
-}
-
 export class CodePlus implements INodeType {
   description: INodeTypeDescription = {
     displayName: "Code Plus",
@@ -167,32 +113,10 @@ export class CodePlus implements INodeType {
         ],
         default: "javaScript",
       },
-      {
-        displayName: "Libraries",
-        name: "libraries",
-        type: "string",
-        default: "",
-        description:
-          "Comma-separated packages or JSON array (e.g. nanoid@latest,lodash or [\"nanoid\"]).",
-        placeholder: "nanoid@latest,lodash",
-      },
-      {
-        displayName: "Init Code",
-        name: "initCode",
-        type: "string",
-        typeOptions: { rows: 4 },
-        default: "",
-        description: "JavaScript to run once before main code (optional).",
-      },
-      {
-        displayName: "Main Code",
-        name: "code",
-        type: "string",
-        typeOptions: { rows: 8 },
-        // Dynamic default: examples vary by Language and Mode. Use Reset Value to reapply.
-        default: "={{ (() => { const m = $parameter.runMode; const l = $parameter.language; if (l === 'javaScript') { if (m === 'runOnceForEachItem') return `// JS — Each item\\nreturn { ...item, json: { ...item.json, processed: true } };`; if (m === 'n8nCode') return `// JS — n8n Code (compat)\\nfor (let i = 0; i < items.length; i++) {\\n  items[i].json.processed = true;\\n}\\nreturn items;`; return `// JS — All items\\nconst total = items.reduce((sum, x) => sum + (x.value || 0), 0);\\nreturn { total };`; } else { if (m === 'runOnceForEachItem') return `# Python — Each item\\n# Not executed in Code Plus; example only.\\nitem['processed'] = True\\nreturn item`; if (m === 'n8nCode') return `# Python — n8n Code (compat)\\n# Not executed in Code Plus; example only.\\nfor i in range(len(items)):\\n    items[i]['processed'] = True\\nreturn items`; return `# Python — All items\\n# Not executed in Code Plus; example only.\\ntotal = sum([x.get('value', 0) for x in items])\\nreturn { 'total': total }`; } })() }}",
-        description: "JavaScript executed per item or once, with custom require available. Tip: click the field’s three dots → Reset Value to reapply examples for the current Language/Mode.",
-      },
+
+      ...javascriptCodeDescription,
+      ...pythonCodeDescription,
+
       {
         displayName: "Options",
         name: "options",
@@ -253,11 +177,14 @@ export class CodePlus implements INodeType {
 
     // Parameters
     const language = this.getNodeParameter("language", 0, "javaScript") as string;
-    const librariesRawInput = this.getNodeParameter("libraries", 0, "") as string;
-    const initCodeInput = this.getNodeParameter("initCode", 0, "") as string;
-    const codeInput = this.getNodeParameter("code", 0) as string;
-    const runMode = this.getNodeParameter("runMode", 0, "runOnceForAllItems") as string;
+    const mode = this.getNodeParameter("mode", 0, "runOnceForAllItems") as string;
     const options = this.getNodeParameter("options", 0, {}) as Record<string, any>;
+
+    // Get code parameters based on language
+    const codeParameterName = language === "javaScript" ? "jsCode" : "pythonCode";
+    const librariesRaw = this.getNodeParameter("libraries", 0, "") as string;
+    const initCode = this.getNodeParameter("initCode", 0, "") as string;
+    const code = this.getNodeParameter(codeParameterName, 0, "") as string;
 
     const timeoutMs = Number(options.timeoutMs ?? 10000);
     const cacheDir = (options.cacheDir as string) || defaultCacheDir();
@@ -265,63 +192,6 @@ export class CodePlus implements INodeType {
     const forceReinstall = Boolean(options.forceReinstall);
     const preinstallOnly = Boolean(options.preinstallOnly);
     const cacheTtlMinutes = Number(options.cacheTtlMinutes ?? 0);
-
-    // Identify node for per-node meta tracking
-    const wfId = this.getWorkflow().id;
-    const nodeName = this.getNode().name;
-    const nodeKey = `${wfId}:${nodeName}`;
-
-    // Read previous Mode/Language from meta for change detection
-    let prevMode: string | undefined;
-    let prevLanguage: string | undefined;
-    try {
-      const metaFile = path.join(cacheDir, ".code-plus-meta.json");
-      if (existsSync(metaFile)) {
-        const metaRawNode = readFileSync(metaFile, "utf-8");
-        const metaNode = JSON.parse(metaRawNode || "{}");
-        const nodesMeta = (metaNode as any).nodes || {};
-        const rec = nodesMeta[nodeKey];
-        if (rec) {
-          prevMode = rec.lastMode;
-          prevLanguage = rec.lastLanguage;
-        }
-      }
-    } catch {}
-
-    const hasPrev = prevMode !== undefined || prevLanguage !== undefined;
-    const modeOrLangChanged = hasPrev && (prevMode !== runMode || prevLanguage !== language);
-
-    // Auto-fill examples into Libraries / Init Code / Main Code
-    const examples = getExampleSnippets(language, runMode);
-    let librariesRaw: string;
-    let initCode: string;
-    let code: string;
-    if (modeOrLangChanged) {
-      // Overwrite all three when Mode/Language changed since last run
-      librariesRaw = examples.libraries;
-      initCode = examples.initCode;
-      code = examples.code;
-      // Inform UI in manual runs that examples were applied due to Mode/Language change
-      if (this.getMode() === "manual") {
-        try {
-          this.sendMessageToUI({ type: "info", message: "Mode/Language changed: applied example Libraries/Init/Main" });
-        } catch {}
-      }
-    } else {
-      // Otherwise, assist only when fields are blank/default
-      librariesRaw = librariesRawInput?.trim().length ? librariesRawInput : examples.libraries;
-      initCode = initCodeInput?.trim().length ? initCodeInput : examples.initCode;
-      code = (!codeInput || !codeInput.trim().length || codeInput.trim() === DEFAULT_MAIN_CODE)
-        ? examples.code
-        : codeInput;
-      if (this.getMode() === "manual" && (!librariesRawInput?.trim().length || !initCodeInput?.trim().length || (!codeInput || !codeInput.trim().length || codeInput.trim() === DEFAULT_MAIN_CODE))) {
-        try {
-          this.sendMessageToUI({ type: "info", message: "Applied example defaults for blank/default fields" });
-        } catch {}
-      }
-    }
-
-    
 
     // Gate non-JS language for now (Python shown in UI but not executed here)
     if (language !== "javaScript") {
@@ -365,15 +235,6 @@ export class CodePlus implements INodeType {
         if (existsSync(nm)) rmSync(nm, { recursive: true, force: true });
       }
       ensureCacheProject(cacheDir);
-      // Update per-node meta with latest Mode/Language for future change detection
-      try {
-        const metaFile = path.join(cacheDir, ".code-plus-meta.json");
-        const prev = existsSync(metaFile) ? JSON.parse(readFileSync(metaFile, "utf-8") || "{}") : {};
-        const nodesMeta = (prev as any).nodes || {};
-        nodesMeta[nodeKey] = { lastMode: runMode, lastLanguage: language };
-        const next = { ...prev, nodes: nodesMeta };
-        writeFileSync(metaFile, JSON.stringify(next));
-      } catch {}
     } catch (err) {
       throw new NodeOperationError(this.getNode(), `Failed to prepare cache directory: ${String(err)}`);
     }
@@ -422,6 +283,8 @@ export class CodePlus implements INodeType {
     // Setup console forwarding similar to native Code node
     const workflowMode = this.getMode();
     const CODE_ENABLE_STDOUT = (process.env as any).CODE_ENABLE_STDOUT;
+    const wfId = this.getWorkflow().id;
+    const nodeName = this.getNode().name;
 
     const pref = `[Workflow "${wfId}"][Node "${nodeName}"]`;
     const forwardToUI = (method: string, args: any[]) => {
@@ -482,7 +345,7 @@ export class CodePlus implements INodeType {
     // - In compat mode, return full items (with `.json`), matching native Code node
     // - In other modes, return only JSON objects for convenience
     const inputHelper: any = {
-      all: () => (runMode === "n8nCode" ? items : items.map((x) => x.json)),
+      all: () => items.map((x) => x.json),
       item: undefined,
     };
 
@@ -514,7 +377,7 @@ export class CodePlus implements INodeType {
 
     // Execute main code
     const wrappedMainCode = wrapAsyncIIFE(code);
-    if (runMode === "n8nCode") {
+    if (mode === "runOnceForAllItems") {
       // Compatibility mode: run once and expose full items like native Code node
       try {
         (context as any).items = items;
@@ -554,7 +417,7 @@ export class CodePlus implements INodeType {
       if (workflowMode === "manual") {
         this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
       }
-    } else if (runMode === "runOnceForEachItem") {
+    } else if (mode === "runOnceForEachItem") {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         try {
@@ -587,33 +450,6 @@ export class CodePlus implements INodeType {
           }
           throw new NodeOperationError(this.getNode(), String(err));
         }
-      }
-      if (workflowMode === "manual") {
-        this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
-      }
-    } else if (runMode === "runOnceForAllItems") {
-      // Run once
-      try {
-        (context as any).items = items.map((x) => x.json);
-        (context as any).$input.item = items[0]?.json;
-        const result = await Promise.resolve(
-          vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
-        );
-        if (Array.isArray(result)) {
-          for (const r of result) returnData.push({ json: r });
-        } else if (typeof result === "object" && result !== null) {
-          returnData.push({ json: result });
-        } else if (typeof result === "undefined") {
-          // passthrough first item or empty
-          if (items.length > 0) returnData.push({ json: items[0].json });
-        } else {
-          returnData.push({ json: { result } });
-        }
-      } catch (err) {
-        if (this.continueOnFail()) {
-          return [[{ json: { error: String(err) } }]];
-        }
-        throw new NodeOperationError(this.getNode(), String(err));
       }
       if (workflowMode === "manual") {
         this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
