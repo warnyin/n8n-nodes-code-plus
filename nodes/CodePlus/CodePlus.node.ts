@@ -265,13 +265,51 @@ export class CodePlus implements INodeType {
     const preinstallOnly = Boolean(options.preinstallOnly);
     const cacheTtlMinutes = Number(options.cacheTtlMinutes ?? 0);
 
+    // Identify node for per-node meta tracking
+    const wfId = this.getWorkflow().id;
+    const nodeName = this.getNode().name;
+    const nodeKey = `${wfId}:${nodeName}`;
+
+    // Read previous Mode/Language from meta for change detection
+    let prevMode: string | undefined;
+    let prevLanguage: string | undefined;
+    try {
+      const metaFile = path.join(cacheDir, ".code-plus-meta.json");
+      if (existsSync(metaFile)) {
+        const metaRawNode = readFileSync(metaFile, "utf-8");
+        const metaNode = JSON.parse(metaRawNode || "{}");
+        const nodesMeta = (metaNode as any).nodes || {};
+        const rec = nodesMeta[nodeKey];
+        if (rec) {
+          prevMode = rec.lastMode;
+          prevLanguage = rec.lastLanguage;
+        }
+      }
+    } catch {}
+
+    const hasPrev = prevMode !== undefined || prevLanguage !== undefined;
+    const modeOrLangChanged = hasPrev && (prevMode !== runMode || prevLanguage !== language);
+
     // Auto-fill examples into Libraries / Init Code / Main Code
     const examples = getExampleSnippets(language, runMode);
-    const librariesRaw = librariesRawInput?.trim().length ? librariesRawInput : examples.libraries;
-    const initCode = initCodeInput?.trim().length ? initCodeInput : examples.initCode;
-    const code = (!codeInput || !codeInput.trim().length || codeInput.trim() === DEFAULT_MAIN_CODE)
-      ? examples.code
-      : codeInput;
+    let librariesRaw: string;
+    let initCode: string;
+    let code: string;
+    if (modeOrLangChanged) {
+      // Overwrite all three when Mode/Language changed since last run
+      librariesRaw = examples.libraries;
+      initCode = examples.initCode;
+      code = examples.code;
+    } else {
+      // Otherwise, assist only when fields are blank/default
+      librariesRaw = librariesRawInput?.trim().length ? librariesRawInput : examples.libraries;
+      initCode = initCodeInput?.trim().length ? initCodeInput : examples.initCode;
+      code = (!codeInput || !codeInput.trim().length || codeInput.trim() === DEFAULT_MAIN_CODE)
+        ? examples.code
+        : codeInput;
+    }
+
+    
 
     // Gate non-JS language for now (Python shown in UI but not executed here)
     if (language !== "javaScript") {
@@ -315,6 +353,15 @@ export class CodePlus implements INodeType {
         if (existsSync(nm)) rmSync(nm, { recursive: true, force: true });
       }
       ensureCacheProject(cacheDir);
+      // Update per-node meta with latest Mode/Language for future change detection
+      try {
+        const metaFile = path.join(cacheDir, ".code-plus-meta.json");
+        const prev = existsSync(metaFile) ? JSON.parse(readFileSync(metaFile, "utf-8") || "{}") : {};
+        const nodesMeta = (prev as any).nodes || {};
+        nodesMeta[nodeKey] = { lastMode: runMode, lastLanguage: language };
+        const next = { ...prev, nodes: nodesMeta };
+        writeFileSync(metaFile, JSON.stringify(next));
+      } catch {}
     } catch (err) {
       throw new NodeOperationError(this.getNode(), `Failed to prepare cache directory: ${String(err)}`);
     }
@@ -362,8 +409,6 @@ export class CodePlus implements INodeType {
 
     // Setup console forwarding similar to native Code node
     const workflowMode = this.getMode();
-    const nodeName = this.getNode().name;
-    const wfId = this.getWorkflow().id;
     const CODE_ENABLE_STDOUT = (process.env as any).CODE_ENABLE_STDOUT;
 
     const pref = `[Workflow "${wfId}"][Node "${nodeName}"]`;
