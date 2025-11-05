@@ -26,6 +26,11 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Docs: Update README to document the new option and its behavior.
 - Build: Rebuild package.
 
+## [0.1.8] - 2025-11-05
+- UX: Remove UI-only `Example` fields. Instead, auto-fill `Libraries`, `Init Code`, and `Main Code` with contextual examples when these fields are blank or `Main Code` still equals the default.
+- Impl: Example snippets depend on `Mode` and `Language`. JavaScript examples execute; Python/Python (Native) examples are informational only and execution remains gated to JavaScript.
+- Build: Rebuild package.
+
 ## [0.1.3] - 2025-11-05
 - Fix: Allow top-level `return` and `await` in user code by wrapping
   execution in an async IIFE inside the sandbox.
