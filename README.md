@@ -200,53 +200,55 @@ return { generatedAt: dayjs().toISOString() };
 - Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
 
 ## Roadmap
+- Recent
+  - 0.1.7 shipped: Cache TTL (minutes) — auto-prunes cached `node_modules` after a configurable lifetime and reinstalls on the next run.
+
 - Near-term (0.1.x)
-  - Publish `0.1.6` to npm พร้อมรายละเอียด Language selector
-  - เพิ่มตัวเลือกใน UI เพื่อเปิด/ปิด stdout (แทน `CODE_ENABLE_STDOUT` env var)
-  - ขยายเอกสาร `$input` และ console forwarding พร้อมตัวอย่าง/ภาพหน้าจอ
-  - ทบทวนค่า Default ของ `Mode` ให้สอดคล้องกับ Code node
-  - เพิ่ม Concurrency control สำหรับโหมด `Run Once for Each Item`
-  - ปรับปรุงข้อความ error ให้เป็น i18n (ไทย/อังกฤษ) และมีรายละเอียดเชิงโครงสร้าง
+  - Add UI toggle for stdout (replace `CODE_ENABLE_STDOUT` env var).
+  - Expand `$input` and console forwarding docs with examples/screenshots.
+  - Review default `Mode` to align with the native Code node.
+  - Concurrency control for `Run Once for Each Item`.
+  - Internationalized error messages (English/Thai) with structured details.
 
 - Python Support
-  - รองรับการรัน Python ผ่าน `venv + pip` และ cache ต่อ node
-  - จัดการ cross-platform (Windows/Linux/macOS) และแพ็กเกจที่เป็น compiled wheels
-  - เพิ่ม safe execution (timeouts, memory limit) และ sanitize imports
-  - โหมด `Python (Native)` ด้วย Pyodide เป็นทางเลือกเมื่อไม่มี system Python
-  - เพิ่ม editor ที่รู้ภาษา: syntax highlight/linting สำหรับ Python
+  - Execute Python via `venv + pip` with per-node cache.
+  - Cross-platform handling (Windows/Linux/macOS) and compiled wheels.
+  - Safety: timeouts, memory limits, sanitized imports.
+  - `Python (Native)` via Pyodide as a fallback when system Python is unavailable.
+  - Language-aware editor (syntax highlight/linting for Python).
 
 - Execution & Security
-  - เพิ่ม allowlist/denylist ให้กับ `require()`
-  - โหมด offline และสแกน dependency whitelist; ตรวจสอบ integrity ด้วย lockfile
-  - จำกัดทรัพยากร (CPU/Memory) และปรับ concurrency ได้
-  - เสริม sandbox และจำกัด globals ที่เข้าถึงได้
+  - Require allowlist/denylist.
+  - Offline mode and dependency whitelist scanning; integrity checks via lockfile.
+  - Resource limits (CPU/Memory) and configurable concurrency.
+  - Harden sandbox and restrict accessible globals.
 
 - Features & Compatibility
-  - รองรับ multiple outputs และ binary data
-  - ขยาย `$input` (เช่น `first`, `pairedItem`) ให้ parity กับ Code node
-  - แสดงรายชื่อและเวอร์ชันของไลบรารีที่ติดตั้งใน UI; เพิ่มปุ่ม upgrade/remove
-  - รองรับ proxy และ custom registry สำหรับการติดตั้ง
+  - Multiple outputs and binary data support.
+  - Expand `$input` (e.g., `first`, `pairedItem`) to parity with the native Code node.
+  - UI list of installed libraries with upgrade/remove actions.
+  - Proxy and custom registry support for installations.
 
 - UX & Developer Experience
-  - เพิ่ม template/snippet library ใน editor
-  - Auto-complete สำหรับ `require()` จากไลบรารีที่ติดตั้ง
-  - โหมด debug พร้อม step logging และ timing
-  - CLI สำหรับ preinstall/prune cache
-  - เพิ่ม unit/integration tests และ example workflows แบบครบชุด
+  - Template/snippet library in the editor.
+  - Autocomplete for `require()` from installed libraries.
+  - Debug mode with step logging and timing.
+  - CLI for preinstall/prune cache operations.
+  - Unit/integration tests and full example workflows.
 
 - Docs & Community
-  - คู่มือ migration จาก Code node
-  - API reference สำหรับ helpers และ `$input`
-  - Contribution guide, code style, issue templates
-  - Security policy และ responsible disclosure
+  - Migration guide from the native Code node.
+  - API reference for helpers and `$input`.
+  - Contribution guide, code style, issue templates.
+  - Security policy and responsible disclosure.
 
 - Monitoring
-  - Telemetry แบบ opt-in และ anonymized usage metrics
-  - Log viewer UI พร้อมตัวกรองและ export
+  - Opt-in telemetry and anonymized usage metrics.
+  - Log viewer UI with filters and export.
 
 - Performance
-  - กลยุทธ์ cache warm-up และ TTL
-  - Prebundle ไลบรารีที่ใช้บ่อยเพื่อลด cold-start
+  - Cache warm-up strategies and TTL tuning.
+  - Prebundle frequently used libraries to reduce cold starts.
 
 ## Development
 ```bash
