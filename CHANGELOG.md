@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.4] - 2025-11-05
+- Feature: Add `Run Mode: n8n Code (compat)` to expose full item
+  structures and accept native Code node-style returns (`items`, `{ json: ... }`).
+- Docs: Update README with compatibility examples.
+
 ## [0.1.3] - 2025-11-05
 - Fix: Allow top-level `return` and `await` in user code by wrapping
   execution in an async IIFE inside the sandbox.

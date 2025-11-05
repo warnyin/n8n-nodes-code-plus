@@ -23,6 +23,7 @@ Documentation structure is inspired by the author’s Swagger API node for n8n [
 - Supports both comma-separated and JSON array input for libraries.
 - Persistent cache directory (default `~/.n8n/code-plus-cache`).
 - Select `Run Mode`: `Per Item` or `Once`.
+- Select `Run Mode`: `Per Item`, `Once`, or `n8n Code (compat)`.
 - Safety and performance options: Timeout, Clear Cache, Force Reinstall, Preinstall Only.
 - `require()` is scoped to the cache directory for controlled loading.
 
@@ -73,6 +74,22 @@ Simple `Main Code` to generate an ID:
 ```js
 const { nanoid } = require('nanoid');
 return { id: nanoid(), input: item };
+```
+
+### n8n Code (compat) examples
+- Modify items in-place like the native Code node:
+```js
+// Run Mode: n8n Code (compat)
+for (let i = 0; i < items.length; i++) {
+  items[i].json.idx = i;
+}
+return items;
+```
+
+- Return a single item object with `json`:
+```js
+// Run Mode: n8n Code (compat)
+return { json: { ok: true } };
 ```
 
 ## Examples
