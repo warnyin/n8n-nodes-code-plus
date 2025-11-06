@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
-## [0.1.24] - 2025-11-06
+# Changelog
+
+## [0.1.25] - 2025-01-06
+### Documentation
+- Updated README.md to reflect v0.1.24 breaking changes
+- All examples now use `$input.all()` and `$input.item` with `.json` accessor
+- Added breaking change notice at top of README
+- Updated Mode section with examples for each mode
+- Updated Troubleshooting section with correct v0.1.24 patterns
+- Updated Execution Context documentation for `$input` helper
+
+## [0.1.24] - 2025-01-06
 - **BREAKING CHANGE**: Fixed API to match n8n standard.
 - **Changed**: Run Once for All Items now uses `$input.all()` instead of `items` array.
 - **Changed**: Run Once for Each Item now uses `$input.item` instead of `item` object.

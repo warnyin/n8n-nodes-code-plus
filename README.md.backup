@@ -8,8 +8,6 @@ Run custom JavaScript with installable npm libraries and a persistent cache.
 
 Package: `@warnyin/n8n-nodes-code-plus`
 
-> **⚠️ BREAKING CHANGE in v0.1.24**: API now matches n8n standard. Use `$input.all()` and `$input.item` with `.json` property accessor. See [CHANGELOG.md](CHANGELOG.md) for migration guide.
-
 ## Table of Contents
 - About
 - Key Features
@@ -133,40 +131,6 @@ return { json: { ok: true } };
 - Roadmap: Python support via system `python` + `venv` and/or Pyodide.
 
 ### Mode
-**Important**: Starting from v0.1.24, Code Plus uses the n8n standard API with `$input.all()` and `$input.item`.
-
-- `Run Once for Each Item`
-  - **Context**: `$input.item` (full item with `.json` property), `$input.all()` (all items), `item`, `items`, `index`
-  - **Execution**: Runs once per input item. Outputs are paired with inputs via `pairedItem`.
-  - **Returns**: Array → multiple outputs for that item; Object → one output; `undefined` → passthrough current item
-  - **Best for**: map/transform per item
-  - **Example**:
-    ```js
-    $input.item.json.newField = 1;
-    return $input.item;
-    ```
-
-- `Run Once for All Items`
-  - **Context**: `$input.all()` (array of all items with `.json` property), `items`, `item` (first item)
-  - **Execution**: Runs once for the whole batch
-  - **Returns**: Array → multiple outputs overall; Object → one output; `undefined` → passthrough all items
-  - **Best for**: aggregate/summary
-  - **Example**:
-    ```js
-    for (const item of $input.all()) {
-      item.json.newField = 1;
-    }
-    return $input.all();
-    ```
-
-- `n8n Code (compat)`
-  - **Context**: full `item` and `items` objects (not only `json`), plus `index`, `$input.item`, `$input.all()`
-  - **Execution**: Iterates per item internally, like n8n's native Code node
-  - **Returns**: Native Code node style (`return items`, `return { json: ... }`, `return [ ... ]`, `return` passthrough)
-  - **Best for**: migration from the native Code node or when full item structure is required
-
-
-### Mode
 - `Run Once for Each Item`
   - Context: `item.json`, `items.map(x => x.json)`, `index`, `$input.item = item.json`.
   - Execution: Runs once per input item. Outputs are paired with inputs via `pairedItem`.
@@ -219,10 +183,9 @@ return { json: { ok: true } };
 
 ### Execution Context
 - `console`: Forwarded to the UI in manual mode; to stdout in execute mode when `CODE_ENABLE_STDOUT="true"`.
-- `$input` helper (matches n8n standard):
-  - `$input.all()` returns array of all items (each item has `.json` property with data)
-  - `$input.item` returns current item (has `.json` property with data)
-  - Access data via `$input.item.json.fieldName` or `item.json.fieldName` in loops
+- `$input` helper:
+  - `all()` returns all `json` payloads.
+  - `item` is set per mode (`item.json` for per-item/once; full `item` in compat mode).
 - `require()`: Scoped to the cache directory for controlled loading of npm packages.
 - Built-ins: `Buffer`, `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`.
 - `helpers`: Exposes n8n helpers via `helpers` in the sandbox.
@@ -238,12 +201,12 @@ return { json: { ok: true } };
 nanoid = require('nanoid').nanoid;
 lodash = require('lodash');
 
-// Main Code - Modify items and return them
-for (const item of $input.all()) {
-  item.json.short_id = nanoid(8);
-  item.json.tags = lodash.uniq(item.json.tags || []);
+// Main Code - Modify items array and return it
+for (const item of items) {
+  item.short_id = nanoid(8);
+  item.tags = lodash.uniq(item.tags || []);
 }
-return $input.all();
+return items;
 ```
 
 ### Per-Item Processing (Mode: Run Once for Each Item)
@@ -255,34 +218,27 @@ return $input.all();
 nanoid = require('nanoid').nanoid;
 
 // Main Code - Process single item
-$input.item.json.short_id = nanoid(8);
-return $input.item;
+item.short_id = nanoid(8);
+return item;
 ```
 
 ### Generate IDs without Init Code (Mode: Run Once for All Items)
 ```js
 const { nanoid } = require('nanoid');
-for (const item of $input.all()) {
-  item.json.id = nanoid();
-}
-return $input.all();
+return items.map((item) => ({ ...item, id: nanoid() }));
 ```
 
 ### Use `lodash` to chunk data (Mode: Run Once for All Items)
 ```js
 const _ = require('lodash');
-const allItems = $input.all();
-const chunks = _.chunk(allItems.map(x => x.json), 50);
-return chunks.map(chunk => ({ json: { chunksCount: chunks.length, items: chunk } }));
+const chunks = _.chunk(items, 50);
+return { chunksCount: chunks.length, chunks };
 ```
 
 ### Run once and stamp a timestamp via `dayjs` (Mode: Run Once for All Items)
 ```js
 const dayjs = require('dayjs');
-for (const item of $input.all()) {
-  item.json.processedAt = dayjs().toISOString();
-}
-return $input.all();
+return items.map(item => ({ ...item, processedAt: dayjs().toISOString() }));
 ```
 
 ## Notes & Limitations
@@ -297,30 +253,30 @@ return $input.all();
 ### My field modifications don't appear in output
 **Problem**: Code like `item.newField = value` doesn't show in output
 
-**Solution**: Use `$input.all()` or `$input.item` with the `.json` property:
+**Solution**: Make sure you're using the correct Mode and variable:
 - **Mode: Run Once for All Items**
   ```js
-  // ✅ Correct - access item.json
-  for (const item of $input.all()) {
-    item.json.short_id = nanoid();
+  // ✅ Correct - items is array of JSON objects
+  for (const item of items) {
+    item.short_id = nanoid();
   }
-  return $input.all();
+  return items;
   ```
   
 - **Mode: Run Once for Each Item**
   ```js
-  // ✅ Correct - access $input.item.json
-  $input.item.json.short_id = nanoid();
-  return $input.item;
+  // ✅ Correct - item is single JSON object
+  item.short_id = nanoid();
+  return item;
   ```
   
 - **Mode: n8n Code (compat)**
   ```js
   // ✅ Correct - items[i].json is the JSON object
-  for (const item of $input.all()) {
+  for (const item of items) {
     item.json.short_id = nanoid();
   }
-  return $input.all();
+  return items;
   ```
 
 ### Variables from Init Code are not defined
