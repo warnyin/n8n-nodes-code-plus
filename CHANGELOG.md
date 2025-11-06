@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.24] - 2025-11-06
+- **BREAKING CHANGE**: Fixed API to match n8n standard.
+- **Changed**: Run Once for All Items now uses `$input.all()` instead of `items` array.
+- **Changed**: Run Once for Each Item now uses `$input.item` instead of `item` object.
+- **Structure**: Items now have proper `{json: {...}}` structure like native Code node.
+- **Examples**: Updated default code examples to use `$input.all()` and `$input.item`.
+- **Compatibility**: Now fully compatible with n8n Code node patterns.
+
+## Migration Guide v0.1.23 → v0.1.24
+**Run Once for All Items:**
+```js
+// OLD (v0.1.23)
+for (const item of items) {
+  item.short_id = nanoid();
+}
+return items;
+
+// NEW (v0.1.24) - n8n standard
+for (const item of $input.all()) {
+  item.json.short_id = nanoid();
+}
+return $input.all();
+```
+
+**Run Once for Each Item:**
+```js
+// OLD (v0.1.23)
+item.short_id = nanoid();
+return item;
+
+// NEW (v0.1.24) - n8n standard
+$input.item.json.short_id = nanoid();
+return $input.item;
+```
+
 ## [0.1.23] - 2025-11-06
 - **Critical Fix**: Fixed Run Once for All Items mode not returning modified items.
 - **Bug**: Items array was exposing full n8n item structure instead of JSON objects.

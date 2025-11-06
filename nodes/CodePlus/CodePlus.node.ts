@@ -379,12 +379,15 @@ export class CodePlus implements INodeType {
     // Execute main code
     const wrappedMainCode = wrapAsyncIIFE(code);
     if (mode === "runOnceForAllItems") {
-      // Run once and expose items as JSON array for convenience
+      // Run once - expose items via $input helper like native Code node
       try {
-        (context as any).items = items.map((x) => x.json);
-        (context as any).item = items[0]?.json;
+        // For this mode, $input.all() returns full items with .json property
+        inputHelper.all = () => items;
+        inputHelper.item = items[0];
+        
+        (context as any).items = items;
+        (context as any).item = items[0];
         (context as any).index = 0;
-        (context as any).$input.item = items[0]?.json;
 
         const result = await Promise.resolve(
           vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
@@ -422,11 +425,13 @@ export class CodePlus implements INodeType {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         try {
-          // Provide item and items into context
-          (context as any).item = item.json;
-          (context as any).items = items.map((x) => x.json);
+          // For this mode, $input.item returns full item with .json property
+          inputHelper.item = item;
+          inputHelper.all = () => items;
+          
+          (context as any).item = item;
+          (context as any).items = items;
           (context as any).index = i;
-          (context as any).$input.item = item.json;
 
           const result = await Promise.resolve(
             vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
@@ -434,13 +439,19 @@ export class CodePlus implements INodeType {
 
           if (Array.isArray(result)) {
             for (const r of result) {
-              returnData.push({ json: r, pairedItem: { item: i } });
+              if (r && typeof r === "object" && "json" in r) {
+                returnData.push({ ...(r as any), pairedItem: { item: i } });
+              } else {
+                returnData.push({ json: r, pairedItem: { item: i } });
+              }
             }
+          } else if (result && typeof result === "object" && "json" in (result as any)) {
+            returnData.push({ ...(result as any), pairedItem: { item: i } });
           } else if (typeof result === "object" && result !== null) {
             returnData.push({ json: result, pairedItem: { item: i } });
           } else if (typeof result === "undefined") {
             // passthrough
-            returnData.push({ json: item.json, pairedItem: { item: i } });
+            returnData.push({ ...item, pairedItem: { item: i } });
           } else {
             returnData.push({ json: { result }, pairedItem: { item: i } });
           }
@@ -456,25 +467,34 @@ export class CodePlus implements INodeType {
         this.sendMessageToUI({ type: "info", message: `Returned ${returnData.length} items (input ${items.length})` });
       }
     } else {
-      // Fallback to per-item behavior for unknown values
+      // n8n Code (compat) mode - Expose full items like the native Code node
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         try {
-          (context as any).item = item.json;
-          (context as any).items = items.map((x) => x.json);
+          inputHelper.item = item;
+          inputHelper.all = () => items;
+          
+          (context as any).item = item;
+          (context as any).items = items;
           (context as any).index = i;
-          (context as any).$input.item = item.json;
+          
           const result = await Promise.resolve(
             vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
           );
           if (Array.isArray(result)) {
             for (const r of result) {
-              returnData.push({ json: r, pairedItem: { item: i } });
+              if (r && typeof r === "object" && "json" in r) {
+                returnData.push({ ...(r as any), pairedItem: { item: i } });
+              } else {
+                returnData.push({ json: r, pairedItem: { item: i } });
+              }
             }
+          } else if (result && typeof result === "object" && "json" in (result as any)) {
+            returnData.push({ ...(result as any), pairedItem: { item: i } });
           } else if (typeof result === "object" && result !== null) {
             returnData.push({ json: result, pairedItem: { item: i } });
           } else if (typeof result === "undefined") {
-            returnData.push({ json: item.json, pairedItem: { item: i } });
+            returnData.push({ ...item, pairedItem: { item: i } });
           } else {
             returnData.push({ json: { result }, pairedItem: { item: i } });
           }
