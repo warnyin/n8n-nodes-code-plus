@@ -362,9 +362,11 @@ export class CodePlus implements INodeType {
     });
 
     // Run init code once if provided
+    // Note: Init code runs without IIFE wrapping to make variables accessible in main code
     if (initCode && initCode.trim().length > 0) {
       try {
-        const initWrapped = wrapAsyncIIFE(initCode);
+        // Wrap in async function but evaluate it to preserve scope
+        const initWrapped = `(async function() { ${initCode} })()`;
         await Promise.resolve(vm.runInContext(initWrapped, context, { timeout: timeoutMs }));
       } catch (err) {
         if (this.continueOnFail()) {

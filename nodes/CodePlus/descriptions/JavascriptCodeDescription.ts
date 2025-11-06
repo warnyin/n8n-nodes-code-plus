@@ -20,7 +20,8 @@ export const javascriptCodeDescription: INodeProperties[] = [
 		name: 'initCode',
 		type: 'string',
 		typeOptions: {
-			alwaysOpenEditWindow: false,
+			editor: 'codeNodeEditor',
+			editorLanguage: 'javaScript',
 		},
 		displayOptions: {
 			show: {
@@ -28,7 +29,7 @@ export const javascriptCodeDescription: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'JavaScript to run once before main code (optional)',
+		description: 'JavaScript to run once before main code (optional). Variables declared here are accessible in main code.',
 		noDataExpression: true,
 	},
 	{

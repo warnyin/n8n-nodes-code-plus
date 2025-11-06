@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.19] - 2025-11-06
+- **Critical Fix**: Fixed Init Code variable scoping - variables declared in Init Code are now accessible in Main Code.
+- **Fix**: Changed Init Code wrapping from arrow function IIFE to regular async function to preserve variable scope.
+- **UI Revert**: Restored Init Code editor to `codeNodeEditor` type for better code editing experience.
+- **Description Update**: Added clarification that Init Code variables are accessible in Main Code.
+- **Breaking Change Note**: Users must declare variables with `const`/`let`/`var` in Init Code for them to be accessible in Main Code.
+
 ## [0.1.18] - 2025-11-06
 - **UI Fix**: Removed large popup for Init Code field - now displays as inline text field.
 - **User Experience**: Init Code field now matches the compact size of other text inputs.

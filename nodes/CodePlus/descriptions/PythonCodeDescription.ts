@@ -20,7 +20,8 @@ export const pythonCodeDescription: INodeProperties[] = [
 		name: 'initCode',
 		type: 'string',
 		typeOptions: {
-			alwaysOpenEditWindow: false,
+			editor: 'codeNodeEditor',
+			editorLanguage: 'python',
 		},
 		displayOptions: {
 			show: {
@@ -28,7 +29,7 @@ export const pythonCodeDescription: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Python to run once before main code (optional)',
+		description: 'Python to run once before main code (optional). Variables declared here are accessible in main code.',
 		noDataExpression: true,
 	},
 	{
