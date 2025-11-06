@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.21] - 2025-11-06
+- **Documentation**: Updated README with clear Init Code usage instructions.
+- **Examples**: Added Init Code examples showing correct global variable declaration.
+- **Clarity**: Added warnings and examples throughout README about const/let/var scoping.
+- **Quick Start**: Updated to demonstrate both Init Code and direct Main Code approaches.
+
 ## [0.1.20] - 2025-11-06
 - **Critical Fix**: Fixed Init Code variable scoping by removing IIFE wrapper entirely.
 - **Breaking Change**: Init Code variables must now be declared **without** `const`/`let`/`var` to be accessible in Main Code.

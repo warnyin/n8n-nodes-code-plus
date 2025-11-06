@@ -76,14 +76,30 @@ npm link @warnyin/n8n-nodes-code-plus
 ### Main Parameters
 - `Libraries`: e.g. `nanoid@latest,lodash` or `["nanoid","dayjs@^1"]`
 - `Init Code`: runs once before main code
+  - ⚠️ **Important**: Variables must be declared **without** `const`/`let`/`var` to be accessible in Main Code
+  - ✅ Correct: `nanoid = require('nanoid').nanoid;`
+  - ❌ Incorrect: `const nanoid = require('nanoid').nanoid;`
+  - Reason: Variables with const/let/var are scoped locally and not accessible outside Init Code
 - `Main Code`: JavaScript where `require()` loads from the cache
-- Tip: Use the field’s menu (`⋯`) → `Reset Value` to reapply example code for the current `Language` and `Mode`.
+- Tip: Use the field's menu (`⋯`) → `Reset Value` to reapply example code for the current `Language` and `Mode`.
 - `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`
 - `Language`: `JavaScript` (Python options are visible but not supported in Code Plus)
 - `Options`: Cache Directory, Clear Cache, Force Reinstall, Timeout (ms), Cache TTL (minutes), Preinstall Only
 
 ### Quick Start
-Simple `Main Code` to generate an ID:
+Example with Init Code and Main Code:
+```js
+// Init Code - Load library (declare WITHOUT const/let/var)
+nanoid = require('nanoid').nanoid;
+
+// Main Code - Use the variable
+for (const item of items) {
+  item.id = nanoid();
+}
+return items;
+```
+
+Simple `Main Code` without Init Code:
 ```js
 const { nanoid } = require('nanoid');
 return { id: nanoid(), input: item };
@@ -135,8 +151,21 @@ return { json: { ok: true } };
 - `Force Reinstall` reinstalls even if present; `Clear Cache Before Run` removes cache `node_modules` before installing.
 
 ### Init Code
-- Runs once before main code in the same sandbox; supports top-level `await` and `return` (async wrapper).
-- Use for preloading libraries, setting globals, warm-ups.
+- Runs once before main code in the same VM context.
+- ⚠️ **Important Variable Scoping**:
+  - Variables declared with `const`/`let`/`var` are **NOT accessible** in Main Code
+  - To share variables, declare **without** `const`/`let`/`var` (global assignment)
+  - Example:
+    ```js
+    // Init Code
+    nanoid = require('nanoid').nanoid;  // ✅ Accessible in Main Code
+    lodash = require('lodash');          // ✅ Accessible in Main Code
+    
+    // DON'T DO THIS:
+    const helper = require('some-lib');  // ❌ NOT accessible in Main Code
+    ```
+- Use for: preloading libraries, setting global configurations, initializing shared state
+- Supports top-level `await` (wrapped in async context)
 
 ### Main Code
 - JavaScript in a restricted VM with custom `require()` bound to the cache.
@@ -160,20 +189,37 @@ return { json: { ok: true } };
 - `helpers`: Exposes n8n helpers via `helpers` in the sandbox.
 
 ## Examples
-- Generate IDs for each item using `nanoid`:
+
+### Using Init Code with Libraries
+```js
+// Libraries: nanoid@latest,lodash
+
+// Init Code - Load libraries globally (NO const/let/var)
+nanoid = require('nanoid').nanoid;
+lodash = require('lodash');
+
+// Main Code - Use the loaded libraries
+for (const item of items) {
+  item.id = nanoid(8);
+  item.tags = lodash.uniq(item.tags);
+}
+return items;
+```
+
+### Generate IDs without Init Code
 ```js
 const { nanoid } = require('nanoid');
 return items.map((item) => ({ ...item, id: nanoid() }));
 ```
 
-- Use `lodash` to chunk data:
+### Use `lodash` to chunk data
 ```js
 const _ = require('lodash');
 const chunks = _.chunk(items, 50);
 return { chunksCount: chunks.length };
 ```
 
-- Run once and stamp a timestamp via `dayjs`:
+### Run once and stamp a timestamp via `dayjs`
 ```js
 const dayjs = require('dayjs');
 return { generatedAt: dayjs().toISOString() };
