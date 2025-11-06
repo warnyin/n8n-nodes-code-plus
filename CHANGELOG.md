@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.22] - 2025-11-06
+- **Documentation**: Added comprehensive Troubleshooting section in README.
+- **Examples**: Clarified Mode-specific examples showing correct item/items usage.
+- **Clarity**: Each example now specifies which Mode to use.
+- **Troubleshooting**: Added solutions for common issues:
+  - Field modifications not appearing in output
+  - Variables from Init Code not defined
+  - Library installation problems
+
 ## [0.1.21] - 2025-11-06
 - **Documentation**: Updated README with clear Init Code usage instructions.
 - **Examples**: Added Init Code examples showing correct global variable declaration.

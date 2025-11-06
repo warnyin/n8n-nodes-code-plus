@@ -190,39 +190,53 @@ return { json: { ok: true } };
 
 ## Examples
 
-### Using Init Code with Libraries
+### Using Init Code with Libraries (Mode: Run Once for All Items)
 ```js
 // Libraries: nanoid@latest,lodash
+// Mode: Run Once for All Items
 
 // Init Code - Load libraries globally (NO const/let/var)
 nanoid = require('nanoid').nanoid;
 lodash = require('lodash');
 
-// Main Code - Use the loaded libraries
+// Main Code - Modify items array and return it
 for (const item of items) {
-  item.id = nanoid(8);
-  item.tags = lodash.uniq(item.tags);
+  item.short_id = nanoid(8);
+  item.tags = lodash.uniq(item.tags || []);
 }
 return items;
 ```
 
-### Generate IDs without Init Code
+### Per-Item Processing (Mode: Run Once for Each Item)
+```js
+// Libraries: nanoid@latest
+// Mode: Run Once for Each Item
+
+// Init Code
+nanoid = require('nanoid').nanoid;
+
+// Main Code - Process single item
+item.short_id = nanoid(8);
+return item;
+```
+
+### Generate IDs without Init Code (Mode: Run Once for All Items)
 ```js
 const { nanoid } = require('nanoid');
 return items.map((item) => ({ ...item, id: nanoid() }));
 ```
 
-### Use `lodash` to chunk data
+### Use `lodash` to chunk data (Mode: Run Once for All Items)
 ```js
 const _ = require('lodash');
 const chunks = _.chunk(items, 50);
-return { chunksCount: chunks.length };
+return { chunksCount: chunks.length, chunks };
 ```
 
-### Run once and stamp a timestamp via `dayjs`
+### Run once and stamp a timestamp via `dayjs` (Mode: Run Once for All Items)
 ```js
 const dayjs = require('dayjs');
-return { generatedAt: dayjs().toISOString() };
+return items.map(item => ({ ...item, processedAt: dayjs().toISOString() }));
 ```
 
 ## Notes & Limitations
@@ -232,8 +246,59 @@ return { generatedAt: dayjs().toISOString() };
 - Avoid long-running or blocking code; configure `Timeout (ms)` appropriately.
 - Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
 
----
+## Troubleshooting
 
+### My field modifications don't appear in output
+**Problem**: Code like `item.newField = value` doesn't show in output
+
+**Solution**: Make sure you're using the correct Mode and variable:
+- **Mode: Run Once for All Items**
+  ```js
+  // ✅ Correct - items is array of JSON objects
+  for (const item of items) {
+    item.short_id = nanoid();
+  }
+  return items;
+  ```
+  
+- **Mode: Run Once for Each Item**
+  ```js
+  // ✅ Correct - item is single JSON object
+  item.short_id = nanoid();
+  return item;
+  ```
+  
+- **Mode: n8n Code (compat)**
+  ```js
+  // ✅ Correct - items[i].json is the JSON object
+  for (const item of items) {
+    item.json.short_id = nanoid();
+  }
+  return items;
+  ```
+
+### Variables from Init Code are not defined
+**Problem**: `ReferenceError: nanoid is not defined`
+
+**Solution**: Don't use `const`/`let`/`var` in Init Code
+```js
+// ❌ Wrong
+const nanoid = require('nanoid').nanoid;
+
+// ✅ Correct
+nanoid = require('nanoid').nanoid;
+```
+
+### Library not installing or not found
+**Problem**: `Cannot find module 'xxx'`
+
+**Solution**:
+1. Check Libraries field has correct package name
+2. Try enabling `Force Reinstall` option
+3. Check `Clear Cache Before Run` to reset cache
+4. Verify network access and npm registry availability
+
+---
 Made with ❤️ for the n8n community
 
 ## Roadmap
