@@ -20,8 +20,7 @@ export const pythonCodeDescription: INodeProperties[] = [
 		name: 'initCode',
 		type: 'string',
 		typeOptions: {
-			editor: 'codeNodeEditor',
-			editorLanguage: 'python',
+			alwaysOpenEditWindow: false,
 		},
 		displayOptions: {
 			show: {

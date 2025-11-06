@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.18] - 2025-11-06
+- **UI Fix**: Removed large popup for Init Code field - now displays as inline text field.
+- **User Experience**: Init Code field now matches the compact size of other text inputs.
+- **Change**: Removed `codeNodeEditor` editor type from Init Code, keeping only JavaScript/Python main code fields as expandable editors.
+
+## [0.1.17] - 2025-11-06
+- **Docs**: Refined README aesthetics and structure (Table of Contents, clearer sections, reset tip highlighted).
+- **Publish**: Patch release to update npm README rendering.
+
 ## [0.1.16] - 2025-11-06
 - **Documentation**: Complete README rewrite for better clarity and conciseness.
 - **Structure**: Reorganized following Ex-README pattern with clear sections:
