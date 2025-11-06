@@ -22,7 +22,6 @@ export const pythonCodeDescription: INodeProperties[] = [
 		typeOptions: {
 			editor: 'codeNodeEditor',
 			editorLanguage: 'python',
-			rows: 10,
 		},
 		displayOptions: {
 			show: {
@@ -48,10 +47,10 @@ export const pythonCodeDescription: INodeProperties[] = [
 			},
 		},
 		default: `# Loop over input items and add a new field called 'myNewField' to the JSON of each one
-for item in _input.all():
-    item.json['myNewField'] = 1
+for item in items:
+    item['myNewField'] = 1
 
-return _input.all()`,
+return items`,
 		description:
 			'Write Python code to add, remove, change properties of items, or return altogether new items. <a href="https://docs.n8n.io/code/builtin/" target="_blank">Learn more</a>.',
 		noDataExpression: true,
@@ -71,9 +70,9 @@ return _input.all()`,
 			},
 		},
 		default: `# Add a new field called 'myNewField' to the JSON of the item
-_input.item.json['myNewField'] = 1
+item['myNewField'] = 1
 
-return _input.item`,
+return item`,
 		description:
 			'Write Python code to add, remove, change properties of items, or return altogether new items. <a href="https://docs.n8n.io/code/builtin/" target="_blank">Learn more</a>.',
 		noDataExpression: true,

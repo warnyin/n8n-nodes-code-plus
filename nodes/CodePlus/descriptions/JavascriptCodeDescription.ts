@@ -22,7 +22,6 @@ export const javascriptCodeDescription: INodeProperties[] = [
 		typeOptions: {
 			editor: 'codeNodeEditor',
 			editorLanguage: 'javaScript',
-			rows: 10,
 		},
 		displayOptions: {
 			show: {
@@ -48,11 +47,11 @@ export const javascriptCodeDescription: INodeProperties[] = [
 			},
 		},
 		default: `// Loop over input items and add a new field called 'myNewField' to the JSON of each one
-for (const item of $input.all()) {
-  item.json.myNewField = 1;
+for (const item of items) {
+  item.myNewField = 1;
 }
 
-return $input.all();`,
+return items;`,
 		description:
 			'Write JavaScript code to add, remove, change properties of items, or return altogether new items. <a href="https://docs.n8n.io/code/builtin/" target="_blank">Learn more</a>.',
 		noDataExpression: true,
@@ -72,9 +71,9 @@ return $input.all();`,
 			},
 		},
 		default: `// Add a new field called 'myNewField' to the JSON of the item
-$input.item.json.myNewField = 1;
+item.myNewField = 1;
 
-return $input.item;`,
+return item;`,
 		description:
 			'Write JavaScript code to add, remove, change properties of items, or return altogether new items. <a href="https://docs.n8n.io/code/builtin/" target="_blank">Learn more</a>.',
 		noDataExpression: true,

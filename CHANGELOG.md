@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.15] - 2025-11-06
+- **Critical Fix**: Fixed "Cannot set properties of undefined" error in Run Once for Each Item and Run Once for All Items modes.
+- **Code Fixes**: Updated default code examples to use correct context variables:
+  - Changed from `$input.all()` to `items` (array of JSON objects)
+  - Changed from `$input.item.json` to `item` (JSON object)
+  - Removed incorrect `.json` accessor that caused errors
+- **UX Improvement**: Removed `rows` from editor typeOptions to prevent oversized popup dialogs.
+- **Editor**: Init Code and Main Code editors now display at optimal size instead of forcing large popup windows.
+- **Validation**: All default examples now work correctly out of the box.
+
 ## [0.1.14] - 2025-11-05
 - **UI Enhancement**: Code fields now automatically switch examples when changing Mode (Run Once for Each Item / Run Once for All Items / n8n Code compat).
 - **UX**: Removed `parameterPane: "wide"` for better field sizing - inputs now display at optimal width.
