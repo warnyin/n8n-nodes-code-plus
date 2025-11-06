@@ -73,6 +73,53 @@ function installLibraries(cacheDir: string, libs: string[]): { success: boolean;
   return { success, output: (res.stdout || "") + (res.stderr || "") };
 }
 
+function getInstalledLibrariesWithVersions(cacheDir: string): string[] {
+  const nodeModulesDir = path.join(cacheDir, "node_modules");
+  if (!existsSync(nodeModulesDir)) {
+    return [];
+  }
+  
+  try {
+    const fs = require('node:fs');
+    const entries = fs.readdirSync(nodeModulesDir, { withFileTypes: true });
+    const libs: string[] = [];
+    
+    for (const entry of entries) {
+      if (entry.name.startsWith('.') || !entry.isDirectory()) continue;
+      
+      if (entry.name.startsWith('@')) {
+        // Scoped packages
+        const scopedDir = path.join(nodeModulesDir, entry.name);
+        const scopedEntries = fs.readdirSync(scopedDir, { withFileTypes: true });
+        for (const scopedEntry of scopedEntries) {
+          if (!scopedEntry.isDirectory()) continue;
+          const version = readPackageVersion(path.join(scopedDir, scopedEntry.name));
+          if (version) libs.push(`${entry.name}/${scopedEntry.name}@${version}`);
+        }
+      } else {
+        // Regular package
+        const version = readPackageVersion(path.join(nodeModulesDir, entry.name));
+        if (version) libs.push(`${entry.name}@${version}`);
+      }
+    }
+    
+    return libs.sort((a, b) => a.localeCompare(b));
+  } catch {
+    return [];
+  }
+}
+
+function readPackageVersion(pkgDir: string): string | null {
+  const pkgPath = path.join(pkgDir, 'package.json');
+  if (!existsSync(pkgPath)) return null;
+  try {
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+    return pkg.version || 'unknown';
+  } catch {
+    return null;
+  }
+}
+
 export class CodePlus implements INodeType {
   description: INodeTypeDescription = {
     displayName: "Code Plus",
@@ -234,6 +281,28 @@ export class CodePlus implements INodeType {
         if (existsSync(nm)) rmSync(nm, { recursive: true, force: true });
       }
       ensureCacheProject(cacheDir);
+      
+      // Show installed libraries in manual mode
+      if (this.getMode() === "manual") {
+        try {
+          const installedLibs = getInstalledLibrariesWithVersions(cacheDir);
+          if (installedLibs.length > 0) {
+            const maxShow = 5;
+            const libList = installedLibs.length <= maxShow
+              ? installedLibs.join(", ")
+              : installedLibs.slice(0, maxShow).join(", ") + ` ... (${installedLibs.length - maxShow} more)`;
+            this.sendMessageToUI({ 
+              type: "info", 
+              message: `📦 Available (${installedLibs.length}): ${libList}` 
+            });
+          } else {
+            this.sendMessageToUI({ 
+              type: "info", 
+              message: "📦 No libraries installed in cache" 
+            });
+          }
+        } catch {}
+      }
     } catch (err) {
       throw new NodeOperationError(this.getNode(), `Failed to prepare cache directory: ${String(err)}`);
     }

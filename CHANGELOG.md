@@ -6,6 +6,15 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 # Changelog
 
+## [0.1.26] - 2025-01-06
+### Added
+- Show installed libraries info in manual mode
+  - Displays list of installed libraries with versions after execution
+  - Format: `📦 Available (count): lib1@version, lib2@version ...`
+  - Truncates to 5 libraries if more are installed
+  - Shows "No libraries installed in cache" if cache is empty
+  - Only displays in manual/test mode, not in production
+
 ## [0.1.25] - 2025-01-06
 ### Documentation
 - Updated README.md to reflect v0.1.24 breaking changes
