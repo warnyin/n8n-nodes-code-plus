@@ -29,7 +29,7 @@ export const javascriptCodeDescription: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'JavaScript to run once before main code (optional). Variables declared here are accessible in main code.',
+		description: 'JavaScript to run once before main code (optional). To make variables accessible in main code, declare without const/let/var. Example: nanoid = require(\'nanoid\').nanoid;',
 		noDataExpression: true,
 	},
 	{

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.20] - 2025-11-06
+- **Critical Fix**: Fixed Init Code variable scoping by removing IIFE wrapper entirely.
+- **Breaking Change**: Init Code variables must now be declared **without** `const`/`let`/`var` to be accessible in Main Code.
+- **Correct Usage**: `nanoid = require('nanoid').nanoid;` (works ✅)
+- **Incorrect Usage**: `const nanoid = require('nanoid').nanoid;` (doesn't work ❌)
+- **Reason**: Variables declared with const/let/var are scoped to the function and not accessible outside.
+- **Updated Description**: Added clear instructions about global variable assignment in Init Code.
+
 ## [0.1.19] - 2025-11-06
 - **Critical Fix**: Fixed Init Code variable scoping - variables declared in Init Code are now accessible in Main Code.
 - **Fix**: Changed Init Code wrapping from arrow function IIFE to regular async function to preserve variable scope.

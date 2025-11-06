@@ -1,6 +1,6 @@
 {
   "name": "@warnyin/n8n-nodes-code-plus",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "n8n node that runs user code with installable cached libraries",
   "license": "MIT",
   "author": {
