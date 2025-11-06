@@ -1,733 +1,1463 @@
-# Code Plus — n8n Community Node# Code Plus — n8n Community Node
+# n8n-nodes-code-plus# Code Plus — n8n Community Node# Code Plus — n8n Community Node
 
 
 
-🚀 **Supercharge your n8n workflows** with custom JavaScript code and **any npm library** you need.Run custom JavaScript with installable npm libraries and a persistent cache.
+This is an n8n community node that runs custom JavaScript with **installable npm libraries** and persistent cache.
 
 
 
-![npm version](https://img.shields.io/npm/v/@warnyin/n8n-nodes-code-plus.svg)![npm version](https://img.shields.io/npm/v/@warnyin/n8n-nodes-code-plus.svg)
-
-![npm downloads](https://img.shields.io/npm/dm/@warnyin/n8n-nodes-code-plus.svg)![npm downloads](https://img.shields.io/npm/dm/@warnyin/n8n-nodes-code-plus.svg)
-
-![license](https://img.shields.io/badge/license-MIT-blue.svg)![license](https://img.shields.io/badge/license-MIT-blue.svg)
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.🚀 **Supercharge your n8n workflows** with custom JavaScript code and **any npm library** you need.Run custom JavaScript with installable npm libraries and a persistent cache.
 
 
 
-Package: `@warnyin/n8n-nodes-code-plus`Package: `@warnyin/n8n-nodes-code-plus`
+[![npm version](https://img.shields.io/npm/v/@warnyin/n8n-nodes-code-plus?logo=npm)](https://www.npmjs.com/package/@warnyin/n8n-nodes-code-plus)
+
+[![npm downloads](https://img.shields.io/npm/dt/@warnyin/n8n-nodes-code-plus?logo=npm)](https://www.npmjs.com/package/@warnyin/n8n-nodes-code-plus)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)![npm version](https://img.shields.io/npm/v/@warnyin/n8n-nodes-code-plus.svg)![npm version](https://img.shields.io/npm/v/@warnyin/n8n-nodes-code-plus.svg)
 
 
 
-## 🎯 Why Code Plus?## About
+## Why Code Plus?![npm downloads](https://img.shields.io/npm/dm/@warnyin/n8n-nodes-code-plus.svg)![npm downloads](https://img.shields.io/npm/dm/@warnyin/n8n-nodes-code-plus.svg)
 
-- Install npm libraries directly from the node UI (comma-separated or JSON array).
 
-The native n8n Code node is great, but **Code Plus takes it to the next level**:- Cache libraries in a persistent directory for reuse and faster runs.
 
-- Optional Init Code that runs once before the main code.
+The native n8n Code node is powerful, but **Code Plus adds npm library support**:![license](https://img.shields.io/badge/license-MIT-blue.svg)![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
-| Feature | Native Code Node | **Code Plus** |- Mode: Run Once for Each Item, Run Once for All Items, or n8n Code (compat).
 
-|---------|-----------------|---------------|- Control Timeout, clear cache, and force reinstall.
+
+| Feature | Native Code | Code Plus |
+
+|---------|-------------|-----------|
+
+| Custom JavaScript | ✅ | ✅ |Package: `@warnyin/n8n-nodes-code-plus`Package: `@warnyin/n8n-nodes-code-plus`
+
+| **Install npm libraries** | ❌ | ✅ |
+
+| **Library caching** | ❌ | ✅ |
+
+| **Init Code** | ❌ | ✅ |
+
+| Multiple modes | ✅ | ✅ |## 🎯 Why Code Plus?## About
+
+
+
+## Installation- Install npm libraries directly from the node UI (comma-separated or JSON array).
+
+
+
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.The native n8n Code node is great, but **Code Plus takes it to the next level**:- Cache libraries in a persistent directory for reuse and faster runs.
+
+
+
+### Community Node Installation- Optional Init Code that runs once before the main code.
+
+
+
+1. Go to **Settings > Community Nodes**.| Feature | Native Code Node | **Code Plus** |- Mode: Run Once for Each Item, Run Once for All Items, or n8n Code (compat).
+
+2. Select **Install**.
+
+3. Enter `@warnyin/n8n-nodes-code-plus` in **Enter npm package name**.|---------|-----------------|---------------|- Control Timeout, clear cache, and force reinstall.
+
+4. Agree to the [risks](https://docs.n8n.io/integrations/community-nodes/risks/) of using community nodes and select **Install**.
 
 | Custom JavaScript | ✅ | ✅ |- Executes in a restricted VM with a custom `require` bound to the cache.
 
+After installing the node, you can use it like any other node. n8n displays the node in search results in the **Nodes** panel.
+
 | Install npm libraries | ❌ | ✅ **Any package from npm** |
+
+### Manual Installation
 
 | Library caching | ❌ | ✅ **Persistent & fast** |Documentation structure is inspired by the author’s Swagger API node for n8n [reference][ref-swagger].
 
+To install manually:
+
 | Init Code (one-time setup) | ❌ | ✅ **Load once, use many times** |
 
-| Multiple execution modes | ✅ | ✅ **+ n8n Code compatibility** |## Key Features
+```bash
+
+npm install @warnyin/n8n-nodes-code-plus| Multiple execution modes | ✅ | ✅ **+ n8n Code compatibility** |## Key Features
+
+```
 
 | Auto field switching | ❌ | ✅ **By Language & Mode** |- On-the-fly npm dependency installation.
 
+## Quick Start
+
 - Supports both comma-separated and JSON array input for libraries.
+
+**1. Add Code Plus node to your workflow**
 
 ### Perfect for:- Persistent cache directory (default `~/.n8n/code-plus-cache`).
 
-- 📦 Using powerful npm libraries (lodash, dayjs, nanoid, axios, etc.)- Select `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`.
+**2. Install a library:**
 
-- 🔄 Processing hundreds of items with shared resources - Language selector: JavaScript (Python options shown but currently unsupported in this node).
+```- 📦 Using powerful npm libraries (lodash, dayjs, nanoid, axios, etc.)- Select `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`.
 
-- 🎨 Complex data transformations- Safety and performance options: Timeout, Clear Cache, Force Reinstall, Preinstall Only.
+Libraries: nanoid@latest
 
-- 🔗 API integrations with custom libraries- `require()` is scoped to the cache directory for controlled loading.
+```- 🔄 Processing hundreds of items with shared resources - Language selector: JavaScript (Python options shown but currently unsupported in this node).
 
-- ⚡ Performance-critical workflows
 
-## Installation
 
-## ⚡ Quick Start### Option 1: Community Nodes (Recommended)
+**3. Write your code:**- 🎨 Complex data transformations- Safety and performance options: Timeout, Clear Cache, Force Reinstall, Preinstall Only.
 
-1) Open n8n and go to `Settings → Community Nodes`
+```javascript
 
-**1. Install the node:**2) Click `Install`
+const { nanoid } = require('nanoid');- 🔗 API integrations with custom libraries- `require()` is scoped to the cache directory for controlled loading.
 
-```3) Enter: `@warnyin/n8n-nodes-code-plus`
+return { id: nanoid(), data: item };
+
+```- ⚡ Performance-critical workflows
+
+
+
+**Done!** 🎉## Installation
+
+
+
+## Parameters## ⚡ Quick Start### Option 1: Community Nodes (Recommended)
+
+
+
+### Mode1) Open n8n and go to `Settings → Community Nodes`
+
+
+
+Choose how your code executes across input items:**1. Install the node:**2) Click `Install`
+
+
+
+#### Run Once for All Items```3) Enter: `@warnyin/n8n-nodes-code-plus`
+
+Execute code **once** for the entire batch of items.
 
 Settings → Community Nodes → Install → @warnyin/n8n-nodes-code-plus4) Accept the risks and install
 
+**When to use:**
+
+- Aggregate data (sum, count, average)```
+
+- Generate reports or summaries
+
+- Process all items together### Option 2: Manual Installation
+
+
+
+**Available variables:****2. Add to your workflow and install a library:**```bash
+
+- `items` — Array of JSON objects
+
+- `item` — First item (for convenience)```cd ~/.n8n/nodes
+
+
+
+**Example:**Libraries: nanoid@latestnpm install @warnyin/n8n-nodes-code-plus
+
+```javascript
+
+const _ = require('lodash');```# Restart n8n
+
+
+
+return {```
+
+  total: _.sumBy(items, 'amount'),
+
+  count: items.length,**3. Write your code:**
+
+  average: _.meanBy(items, 'amount')
+
+};```javascript### Option 3: Local Development & Linking
+
 ```
-
-### Option 2: Manual Installation
-
-**2. Add to your workflow and install a library:**```bash
-
-```cd ~/.n8n/nodes
-
-Libraries: nanoid@latestnpm install @warnyin/n8n-nodes-code-plus
-
-```# Restart n8n
-
-```
-
-**3. Write your code:**
-
-```javascript### Option 3: Local Development & Linking
 
 const { nanoid } = require('nanoid');```bash
 
-return { id: nanoid(), data: $input.item.json };# Clone, install, and build
+**Input:**
 
-```git clone https://github.com/warnyin/n8n-nodes-code-plus.git
+```jsonreturn { id: nanoid(), data: $input.item.json };# Clone, install, and build
 
-cd n8n-nodes-code-plus
+[
 
-**Done!** 🎉npm install
+  {"amount": 100},```git clone https://github.com/warnyin/n8n-nodes-code-plus.git
 
-npm run build
+  {"amount": 200},
 
----
+  {"amount": 50}cd n8n-nodes-code-plus
 
-# Link to n8n
+]
 
-## 📚 Complete Guidenpm link
+```**Done!** 🎉npm install
 
-cd ~/.n8n
 
-### 🔧 Installationnpm link @warnyin/n8n-nodes-code-plus
 
-# Restart n8n
+**Output:**npm run build
 
-#### Option 1: Community Nodes (Recommended)```
+```json
 
-1. Open n8n → `Settings` → `Community Nodes`
+[---
 
-2. Click `Install`## Usage
+  {"total": 350, "count": 3, "average": 116.67}
 
-3. Enter: `@warnyin/n8n-nodes-code-plus`### Main Parameters
-
-4. Accept the risks and click Install- `Language`: Select between `JavaScript`, `Python`, or `Python (Native)`. **Note**: Currently only JavaScript is fully supported for execution.
-
-5. Restart n8n- `Libraries`: e.g. `nanoid@latest,lodash` or `["nanoid","dayjs@^1"]`
-
-- `Init Code`: runs once before main code (language-specific field)
-
-#### Option 2: Manual Installation- `Main Code`: JavaScript or Python code where `require()` loads from the cache (language-specific field)
-
-```bash- **Important**: Fields automatically switch based on selected language using displayOptions:
-
-cd ~/.n8n/nodes  - JavaScript: Shows `Libraries`, `Init Code (JavaScript)`, and `JavaScript` fields
-
-npm install @warnyin/n8n-nodes-code-plus  - Python: Shows `Libraries`, `Init Code (Python)`, and `Python` fields
-
-# Restart n8n- `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`
-
-```- `Options`:
-
-  - `Cache Directory` (default: `~/.n8n/code-plus-cache`)
-
-#### Option 3: Local Development  - `Clear Cache Before Run`
-
-```bash  - `Force Reinstall`
-
-git clone https://github.com/warnyin/n8n-nodes-code-plus.git  - `Timeout (ms)`
-
-cd n8n-nodes-code-plus  - `Cache TTL (minutes)`
-
-npm install  - `Preinstall Only`
-
-npm run build
-
-npm link### Quick Start
-
-cd ~/.n8nSimple `Main Code` to generate an ID:
-
-npm link @warnyin/n8n-nodes-code-plus```js
-
-# Restart n8nconst { nanoid } = require('nanoid');
-
-```return { id: nanoid(), input: item };
+]# Link to n8n
 
 ```
 
+## 📚 Complete Guidenpm link
+
 ---
 
-### n8n Code (compat) examples
+cd ~/.n8n
 
-## 🎮 Understanding Each Field- Modify items in-place like the native Code node:
+#### Run Once for Each Item
 
-```js
+Execute code **separately for each input item**.### 🔧 Installationnpm link @warnyin/n8n-nodes-code-plus
 
-### 1️⃣ **Language** (Selector)// Mode: n8n Code (compat)
 
-for (let i = 0; i < items.length; i++) {
 
-Select your programming language. Currently **JavaScript is fully supported**.  items[i].json.idx = i;
+**When to use:**# Restart n8n
+
+- Transform/modify each item individually
+
+- Add unique IDs per item#### Option 1: Community Nodes (Recommended)```
+
+- Process items independently
+
+1. Open n8n → `Settings` → `Community Nodes`
+
+**Available variables:**
+
+- `item` — Current item's JSON data2. Click `Install`## Usage
+
+- `items` — All items (for reference)
+
+- `index` — Current item index (0-based)3. Enter: `@warnyin/n8n-nodes-code-plus`### Main Parameters
+
+
+
+**Example:**4. Accept the risks and click Install- `Language`: Select between `JavaScript`, `Python`, or `Python (Native)`. **Note**: Currently only JavaScript is fully supported for execution.
+
+```javascript
+
+const { nanoid } = require('nanoid');5. Restart n8n- `Libraries`: e.g. `nanoid@latest,lodash` or `["nanoid","dayjs@^1"]`
+
+
+
+return {- `Init Code`: runs once before main code (language-specific field)
+
+  id: nanoid(),
+
+  index: index,#### Option 2: Manual Installation- `Main Code`: JavaScript or Python code where `require()` loads from the cache (language-specific field)
+
+  ...item
+
+};```bash- **Important**: Fields automatically switch based on selected language using displayOptions:
+
+```
+
+cd ~/.n8n/nodes  - JavaScript: Shows `Libraries`, `Init Code (JavaScript)`, and `JavaScript` fields
+
+**Input:**
+
+```jsonnpm install @warnyin/n8n-nodes-code-plus  - Python: Shows `Libraries`, `Init Code (Python)`, and `Python` fields
+
+[
+
+  {"name": "Alice"},# Restart n8n- `Mode`: `Run Once for Each Item`, `Run Once for All Items`, or `n8n Code (compat)`
+
+  {"name": "Bob"}
+
+]```- `Options`:
+
+```
+
+  - `Cache Directory` (default: `~/.n8n/code-plus-cache`)
+
+**Output:**
+
+```json#### Option 3: Local Development  - `Clear Cache Before Run`
+
+[
+
+  {"id": "V1StGXR8_", "index": 0, "name": "Alice"},```bash  - `Force Reinstall`
+
+  {"id": "KYfwxwjl_", "index": 1, "name": "Bob"}
+
+]git clone https://github.com/warnyin/n8n-nodes-code-plus.git  - `Timeout (ms)`
+
+```
+
+cd n8n-nodes-code-plus  - `Cache TTL (minutes)`
+
+---
+
+npm install  - `Preinstall Only`
+
+#### n8n Code (compat)
+
+**Compatibility mode** with the native n8n Code node.npm run build
+
+
+
+**When to use:**npm link### Quick Start
+
+- Migrating from native Code node
+
+- Need full `items` structure (with `.json`, `.binary`)cd ~/.n8nSimple `Main Code` to generate an ID:
+
+
+
+**Available variables:**npm link @warnyin/n8n-nodes-code-plus```js
+
+- `items` — Full items array
+
+- `item` — Current item object# Restart n8nconst { nanoid } = require('nanoid');
+
+- `index` — Current index
+
+```return { id: nanoid(), input: item };
+
+**Example:**
+
+```javascript```
+
+// Modify items in-place
+
+for (let i = 0; i < items.length; i++) {---
+
+  items[i].json.processed = true;
+
+  items[i].json.index = i;### n8n Code (compat) examples
 
 }
 
-**Options:**return items;
+## 🎮 Understanding Each Field- Modify items in-place like the native Code node:
+
+return items;
+
+``````js
+
+
+
+---### 1️⃣ **Language** (Selector)// Mode: n8n Code (compat)
+
+
+
+### Languagefor (let i = 0; i < items.length; i++) {
+
+
+
+Select programming language. Currently **JavaScript is fully supported**.Select your programming language. Currently **JavaScript is fully supported**.  items[i].json.idx = i;
+
+
+
+**Options:**}
+
+- ✅ `JavaScript` — Fully functional
+
+- 🚧 `Python (Beta)` — Coming soon**Options:**return items;
+
+- 🚧 `Python (Native) (Beta)` — Coming soon
 
 - ✅ `JavaScript` — Fully functional, runs with Node.js VM```
 
+---
+
 - 🚧 `Python (Beta)` — UI available, execution coming soon
+
+### Libraries
 
 - 🚧 `Python (Native) (Beta)` — UI available, execution coming soon- Return a single item object with `json`:
 
+Install npm packages to use in your code. Packages are cached for fast reuse.
+
 ```js
+
+**Format:**
 
 **Note:** Python options are shown for future compatibility but currently display a friendly message without executing.// Mode: n8n Code (compat)
 
-return { json: { ok: true } };
+**Comma-separated:**
+
+```return { json: { ok: true } };
+
+nanoid@latest, lodash, dayjs@^1.11.0
+
+```---```
+
+
+
+**JSON array:**
+
+```json
+
+["nanoid", "lodash@4.17.21", "axios"]### 2️⃣ **Mode** (Execution Strategy)## Detailed Parameters & Behavior (English)
+
+```
+
+
+
+**Popular libraries:**
+
+- `lodash` — Data manipulation utilitiesChoose **how your code runs** across input items. This is crucial for performance and logic!### Language
+
+- `dayjs` — Date/time handling
+
+- `nanoid` — Unique ID generation- Options: `JavaScript` (supported), `Python (Beta)`, `Python (Native) (Beta)`.
+
+- `axios` — HTTP requests
+
+- `uuid` — UUID generation#### 🔁 **Run Once for Each Item**- Current behavior: Only `JavaScript` executes in Code Plus. Selecting Python shows a friendly message and prevents execution.
+
+- `validator` — String validation
+
+- `cheerio` — HTML parsing- Roadmap: Python support via system `python` + `venv` and/or Pyodide.
+
+
+
+**How it works:**Your code executes **separately for each input item**.
+
+1. First run: Libraries install (takes a few seconds)
+
+2. Subsequent runs: Use cached versions (instant!)### Mode
+
+3. Cache location: `~/.n8n/code-plus-cache`
+
+**When to use:**- `Run Once for Each Item`
+
+---
+
+- Transform/modify each item individually  - Context: `item.json`, `items.map(x => x.json)`, `index`, `$input.item = item.json`.
+
+### Init Code
+
+- Add unique IDs or timestamps per item  - Execution: Runs once per input item. Outputs are paired with inputs via `pairedItem`.
+
+Code that runs **once before Main Code**, regardless of item count.
+
+- Process items independently  - Returns: Array → multiple outputs for that item; Object → one output; `undefined` → passthrough current `item.json`.
+
+**Why use Init Code?**
+
+  - Best for: map/transform per item.
+
+✅ **Performance** — Load libraries once, not per item (10-100x faster)  
+
+✅ **Clean code** — Separate setup from business logic  **Available context:**- `Run Once for All Items`
+
+✅ **Shared resources** — Database connections, API clients  
+
+✅ **Helper functions** — Reusable utilities- `$input.item.json` — Current item's data  - Context: `items` is an array of all `json` payloads; `$input.item = items[0]?.json`.
+
+
+
+**Example 1: Load Libraries Once**- `$input.all()` — All items (if needed for comparison)  - Execution: Runs once for the whole batch.
+
+
+
+**Init Code:**- `item` — Alias for `$input.item.json`  - Returns: Array → multiple outputs overall; Object → one output; `undefined` → passthrough first item’s `json` (if present).
+
+```javascript
+
+const { nanoid } = require('nanoid');- `index` — Current item index (0-based)  - Best for: aggregate/summary.
+
+const _ = require('lodash');
+
+const dayjs = require('dayjs');- `n8n Code (compat)`
+
+```
+
+**Example:**  - Context: full `item` and `items` objects (not only `json`), plus `index`, `$input.item = item`.
+
+**Main Code:**
+
+```javascript```javascript  - Execution: Iterates per item internally, like n8n’s native Code node.
+
+// No require() needed - much faster!
+
+return {// Add a unique ID to each item  - Returns: Native Code node style (`return items`, `return { json: ... }`, `return [ ... ]`, `return` passthrough).
+
+  id: nanoid(),
+
+  timestamp: dayjs().format(),const { nanoid } = require('nanoid');  - Best for: migration from the native Code node or when full item structure is required.
+
+  name: _.upperCase(item.name)
+
+};
+
+```
+
+return {### Libraries
+
+**Example 2: Helper Functions**
+
+  id: nanoid(),- Input formats: comma-separated (`nanoid@latest,lodash`) or JSON array (`["nanoid","dayjs@^1"]`).
+
+**Init Code:**
+
+```javascript  index: index,- Installed into the node’s cache directory (default: `~/.n8n/code-plus-cache`).
+
+function validateEmail(email) {
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);  data: $input.item.json- `Force Reinstall` reinstalls even if present; `Clear Cache Before Run` removes cache `node_modules` before installing.
+
+}
+
+};
+
+function formatPhone(phone) {
+
+  return phone.replace(/\D/g, '').slice(0, 10);```### Init Code
+
+}
+
+```- Runs once before main code in the same sandbox; supports top-level `await` and `return` (async wrapper).
+
+
+
+**Main Code:****Input:**- Use for preloading libraries, setting globals, warm-ups.
+
+```javascript
+
+return {```json
+
+  ...item,
+
+  emailValid: validateEmail(item.email),[### Main Code
+
+  phone: formatPhone(item.phone)
+
+};  { "name": "Alice" },- JavaScript in a restricted VM with custom `require()` bound to the cache.
+
+```
+
+  { "name": "Bob" }- Supports top-level `await`/`return`; `Timeout (ms)` applies to both init and main code.
+
+**Example 3: API Client Setup**
+
+]
+
+**Init Code:**
+
+```javascript```### Options
+
+const axios = require('axios');
+
+- `Cache Directory`: Path for library cache (default `~/.n8n/code-plus-cache`).
+
+const api = axios.create({
+
+  baseURL: 'https://api.example.com',**Output:**- `Clear Cache Before Run`: Remove cached modules before reinstalling.
+
+  timeout: 5000,
+
+  headers: { 'Authorization': 'Bearer YOUR_TOKEN' }```json- `Force Reinstall`: Reinstall libraries regardless of presence.
+
+});
+
+```[- `Timeout (ms)`: Max execution time for init/main code.
+
+
+
+**Main Code:**  { "id": "V1StGXR8_", "index": 0, "data": { "name": "Alice" } },- `Cache TTL (minutes)`: Automatically clears installed libraries when the last install time exceeds this TTL. Set `0` to disable. Useful to keep memory fresh by re-installing daily or after fixed periods.
+
+```javascript
+
+const response = await api.get(`/users/${item.userId}`);  { "id": "KYfwxwjl_", "index": 1, "data": { "name": "Bob" } }- `Preinstall Only`: Install libraries and return a summary without running code.
+
+return { userId: item.userId, userData: response.data };
+
+```]
+
+
+
+---```### Execution Context
+
+
+
+### Main Code- `console`: Forwarded to the UI in manual mode; to stdout in execute mode when `CODE_ENABLE_STDOUT="true"`.
+
+
+
+Your main processing logic. Code executes based on selected Mode.---- `$input` helper:
+
+
+
+**Supports:**  - `all()` returns all `json` payloads.
+
+- ✅ Top-level `await` (async/await)
+
+- ✅ Top-level `return`#### 🎯 **Run Once for All Items**  - `item` is set per mode (`item.json` for per-item/once; full `item` in compat mode).
+
+- ✅ All libraries from Init Code
+
+- ✅ Built-in Node.js modules- `require()`: Scoped to the cache directory for controlled loading of npm packages.
+
+
+
+**Return behavior:**Your code executes **once for the entire batch** of items.- Built-ins: `Buffer`, `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`.
+
+
+
+**Run Once for All Items:**- `helpers`: Exposes n8n helpers via `helpers` in the sandbox.
+
+```javascript
+
+// Return object → Single output**When to use:**
+
+return { summary: 'complete' };
+
+- Aggregate data (sum, average, count)### Error Handling
+
+// Return array → Multiple outputs
+
+return items.map(item => ({ ...item, processed: true }));- Generate reports or summaries- Throws `NodeOperationError` on failures; with `Continue On Fail`, returns an error item instead of halting.
+
+```
+
+- Process all items together- Library installation failures include detailed stdout/stderr in the `detail` field.
+
+**Run Once for Each Item:**
+
+```javascript
+
+// Return object → Single output per item
+
+return { result: 'success' };**Available context:**### Environment Variables
+
+
+
+// Return array → Multiple outputs per item- `items` — Array of all items' JSON data- `CODE_ENABLE_STDOUT`: When set to `"true"`, forwards console output to stdout in execute mode (non-manual). Otherwise, console output appears in the UI only during manual runs.
+
+return [{ item: 1 }, { item: 2 }];
+
+- `$input.all()` — Same as `items`
+
+// Return undefined → Passthrough original
+
+return;- `$input.item` — First item (for convenience)### Examples by Mode
+
+```
+
+- Per-item transform:
+
+---
+
+**Example:**```js
+
+### Options
+
+```javascriptreturn { ...item, json: { ...item.json, idx: index } };
+
+Advanced settings for caching, timeout, and installation control.
+
+// Calculate statistics for all items```
+
+#### Cache Directory
+
+Custom path for library cache.const _ = require('lodash');- Aggregate once:
+
+
+
+**Default:** `~/.n8n/code-plus-cache`  ```js
+
+**Example:** `/opt/n8n/custom-cache`
+
+const total = _.sumBy(items, 'amount');const sum = items.reduce((acc, x) => acc + (x.value || 0), 0);
+
+---
+
+const average = _.meanBy(items, 'amount');return { total: sum };
+
+#### Clear Cache Before Run
+
+Delete all cached libraries before installing.const count = items.length;```
+
+
+
+**Default:** `false`  - Compat passthrough with in-place edit:
+
+**Use when:** Need fresh install, troubleshooting
+
+return {```js
+
+---
+
+  summary: {items[index].json.tag = 'processed';
+
+#### Force Reinstall
+
+Reinstall libraries even if cached.    total,return items;
+
+
+
+**Default:** `false`      average,```
+
+**Use when:** Update to latest version
+
+    count,
+
+---
+
+    timestamp: new Date().toISOString()## Examples
+
+#### Timeout (ms)
+
+Maximum execution time for Init Code + Main Code.  }- Generate IDs for each item using `nanoid`:
+
+
+
+**Default:** `10000` (10 seconds)  };```js
+
+**Range:** `100` - `300000` (5 minutes)
+
+```const { nanoid } = require('nanoid');
+
+---
+
+return items.map((item) => ({ ...item, id: nanoid() }));
+
+#### Cache TTL (minutes)
+
+Automatically clear cached libraries after specified time.**Input:**```
+
+
+
+**Default:** `0` (disabled)  ```json
+
+**Example:** `1440` (24 hours)
+
+[- Use `lodash` to chunk data:
+
+**Use cases:**
+
+```  { "amount": 100 },```js
+
+1440  → Daily refresh
+
+10080 → Weekly refresh  { "amount": 200 },const _ = require('lodash');
+
+0     → Never clear (max performance)
+
+```  { "amount": 50 }const chunks = _.chunk(items, 50);
+
+
+
+---]return { chunksCount: chunks.length };
+
+
+
+#### Preinstall Only``````
+
+Install libraries without running code.
+
+
+
+**Default:** `false`
+
+**Output:**- Run once and stamp a timestamp via `dayjs`:
+
+**Use when:**
+
+- Warming up cache```json```js
+
+- Testing installations
+
+- Preparing for offline execution[const dayjs = require('dayjs');
+
+
+
+**Returns:**  {return { generatedAt: dayjs().toISOString() };
+
+```json
+
+{    "summary": {```
+
+  "status": "preinstalled",
+
+  "libraries": ["lodash", "dayjs", "nanoid"]      "total": 350,
+
+}
+
+```      "average": 116.67,## Notes & Limitations
+
+
+
+---      "count": 3,- Requires network access and permission to run `npm install` on the n8n server.
+
+
+
+## Examples      "timestamp": "2025-11-05T10:30:00.000Z"- Libraries are installed into the cache directory only, not into n8n itself.
+
+
+
+### Generate Unique IDs    }- `require()` is restricted to the cache; Node built-ins are accessible via the sandbox.
+
+
+
+**Settings:**  }- Avoid long-running or blocking code; configure `Timeout (ms)` appropriately.
+
+```
+
+Mode: Run Once for Each Item]- Version `0.1.1` adjusted the build output so n8n loads from `dist/nodes/CodePlus/CodePlus.node.js`.
+
+Libraries: nanoid
+
+``````- Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
+
+
+
+**Main Code:**
+
+```javascript
+
+const { nanoid } = require('nanoid');------
+
+
+
+return {
+
+  id: nanoid(),
+
+  customerId: nanoid(10),#### 🔄 **n8n Code (compat)**Made with ❤️ for the n8n community
+
+  ...item
+
+};
+
+```
+
+**Compatibility mode** with the native n8n Code node. Use this when migrating from the native Code node.## Roadmap
+
+---
+
+- Recent
+
+### Data Validation
+
+**When to use:**  - 0.1.7 shipped: Cache TTL (minutes) — auto-prunes cached `node_modules` after a configurable lifetime and reinstalls on the next run.
+
+**Settings:**
+
+```- Migrating existing workflows from native Code node
+
+Mode: Run Once for Each Item
+
+Libraries: validator, lodash- Need full `items` structure (with `.json`, `.binary`, etc.)- Near-term (0.1.x)
+
+```
+
+- Want native Code node behavior  - Add UI toggle for stdout (replace `CODE_ENABLE_STDOUT` env var).
+
+**Init Code:**
+
+```javascript  - Expand `$input` and console forwarding docs with examples/screenshots.
+
+const validator = require('validator');
+
+const _ = require('lodash');**Available context:**  - Review default `Mode` to align with the native Code node.
+
+
+
+function formatPhone(phone) {- `items` — Full items array (not just JSON)  - Concurrency control for `Run Once for Each Item`.
+
+  return phone.replace(/\D/g, '').slice(0, 10);
+
+}- `item` — Current item object  - Internationalized error messages (English/Thai) with structured details.
+
+```
+
+- `index` — Current index
+
+**Main Code:**
+
+```javascript- Python Support
+
+return {
+
+  ...item,**Example:**  - Execute Python via `venv + pip` with per-node cache.
+
+  emailValid: validator.isEmail(item.email),
+
+  phoneFormatted: formatPhone(item.phone),```javascript  - Cross-platform handling (Windows/Linux/macOS) and compiled wheels.
+
+  urlValid: validator.isURL(item.website || '')
+
+};// Modify items in-place (native Code node style)  - Safety: timeouts, memory limits, sanitized imports.
+
+```
+
+for (let i = 0; i < items.length; i++) {  - `Python (Native)` via Pyodide as a fallback when system Python is unavailable.
+
+---
+
+  items[i].json.processed = true;  - Language-aware editor (syntax highlight/linting for Python).
+
+### Generate Report
+
+  items[i].json.position = i + 1;
+
+**Settings:**
+
+```}- Execution & Security
+
+Mode: Run Once for All Items
+
+Libraries: dayjs, lodash  - Require allowlist/denylist.
+
+```
+
+return items;  - Offline mode and dependency whitelist scanning; integrity checks via lockfile.
+
+**Main Code:**
+
+```javascript```  - Resource limits (CPU/Memory) and configurable concurrency.
+
+const dayjs = require('dayjs');
+
+const _ = require('lodash');  - Harden sandbox and restrict accessible globals.
+
+
+
+return {**Or return a new single item:**
+
+  reportId: `RPT-${dayjs().format('YYYYMMDD-HHmmss')}`,
+
+  generatedAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),```javascript- Features & Compatibility
+
+  itemCount: items.length,
+
+  totalAmount: _.sumBy(items, 'amount'),return { json: { message: "All items processed", count: items.length } };  - Multiple outputs and binary data support.
+
+  averageAmount: _.meanBy(items, 'amount')
+
+};```  - Expand `$input` (e.g., `first`, `pairedItem`) to parity with the native Code node.
+
+```
+
+  - UI list of installed libraries with upgrade/remove actions.
+
+---
+
+---  - Proxy and custom registry support for installations.
+
+### API Integration
+
+
+
+**Settings:**
+
+```### 3️⃣ **Libraries** (npm Packages)- UX & Developer Experience
+
+Mode: Run Once for Each Item
+
+Libraries: axios  - Template/snippet library in the editor.
+
+Timeout: 10000
+
+```Install any npm package you need! Packages are cached for fast reuse.  - Autocomplete for `require()` from installed libraries.
+
+
+
+**Init Code:**  - Debug mode with step logging and timing.
+
+```javascript
+
+const axios = require('axios');**Format options:**  - CLI for preinstall/prune cache operations.
+
+
+
+const api = axios.create({  - Unit/integration tests and full example workflows.
+
+  baseURL: 'https://api.github.com',
+
+  timeout: 8000,**Comma-separated:**
+
+  headers: { 'Accept': 'application/vnd.github.v3+json' }
+
+});```- Docs & Community
+
+```
+
+nanoid@latest, lodash, dayjs@^1.11.0  - Migration guide from the native Code node.
+
+**Main Code:**
+
+```javascript```  - API reference for helpers and `$input`.
+
+try {
+
+  const response = await api.get(`/users/${item.username}`);  - Contribution guide, code style, issue templates.
+
+  return {
+
+    username: item.username,**JSON array:**  - Security policy and responsible disclosure.
+
+    profile: {
+
+      name: response.data.name,```json
+
+      bio: response.data.bio,
+
+      repos: response.data.public_repos["nanoid", "lodash@4.17.21", "axios"]- Monitoring
+
+    },
+
+    status: 'success'```  - Opt-in telemetry and anonymized usage metrics.
+
+  };
+
+} catch (error) {  - Log viewer UI with filters and export.
+
+  return {
+
+    username: item.username,**Common useful libraries:**
+
+    error: error.message,
+
+    status: 'failed'- `lodash` — Powerful data manipulation utilities- Performance
+
+  };
+
+}- `dayjs` — Date/time handling  - Cache warm-up strategies and TTL tuning.
+
+```
+
+- `nanoid` — Unique ID generation  - Prebundle frequently used libraries to reduce cold starts.
+
+---
+
+- `axios` — HTTP requests
+
+## Available Context
+
+- `uuid` — UUID generation## Development
+
+### Built-in Variables
+
+- `crypto-js` — Encryption/hashing```bash
+
+**All modes:**
+
+- `items` — Items array (structure depends on mode)- `validator` — String validationnpm install
+
+- `item` — Current item
+
+- `index` — Current item index (Run Once for Each Item only)- `cheerio` — HTML parsing (like jQuery)npm run build
+
+
+
+### Console Methods# Use npm link as shown above to connect with n8n
+
+
+
+Output appears in n8n UI during manual execution:**Example with multiple libraries:**```
+
+
+
+```javascript```javascript
+
+console.log('Processing item:', index);
+
+console.info('Status:', 'success');// Libraries: lodash, dayjs, nanoid## Changelog
+
+console.warn('Low stock:', item.quantity);
+
+console.error('Failed to process:', item.id);- See `CHANGELOG.md` for release notes.
+
+```
+
+const _ = require('lodash');
+
+Set `CODE_ENABLE_STDOUT=true` environment variable for production logging.
+
+const dayjs = require('dayjs');## License
+
+### `require()` Function
+
+const { nanoid } = require('nanoid');- MIT License — see `LICENSE.md`.
+
+Load npm packages from cache:
+
+
+
+```javascript
+
+// Installed librariesconst grouped = _.groupBy($input.all(), 'category');## References
+
+const _ = require('lodash');
+
+const dayjs = require('dayjs');- [0] @warnyin/n8n-nodes-swagger-api — README structure and sections [ref-swagger]
+
+const { nanoid } = require('nanoid');
+
+return {
+
+// Node.js built-ins (no installation needed)
+
+const crypto = require('crypto');  id: nanoid(),[ref-swagger]: https://www.npmjs.com/package/@warnyin/n8n-nodes-swagger-api#-warnyinn8n-nodes-swagger-api
+
+const path = require('path');  timestamp: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+
+const fs = require('fs');  categories: Object.keys(grouped),
+
+```  totalItems: $input.all().length
+
+};
+
+### `helpers` Object```
+
+
+
+Access n8n helpers:**How it works:**
+
+1. Libraries are installed to `~/.n8n/code-plus-cache`
+
+```javascript2. First run installs (takes a few seconds)
+
+const response = await helpers.httpRequest({3. Subsequent runs use cached versions (instant!)
+
+  method: 'GET',4. Cache persists across workflow executions
+
+  url: 'https://api.example.com/data'
+
+});---
+
+```
+
+### 4️⃣ **Init Code** (One-Time Setup)
+
+---
+
+Code that runs **once before Main Code**, regardless of how many items you process.
+
+## Performance Tips
+
+**Why use Init Code?**
+
+### 1. Use Init Code for Setup
+
+✅ **Performance:** Load libraries once, not per item  
+
+❌ **Slow:**✅ **Clean code:** Separate setup from business logic  
+
+```javascript✅ **Shared resources:** Database connections, API clients  
+
+// Main Code - loads 100 times for 100 items✅ **Helper functions:** Reusable utilities
+
+const _ = require('lodash');
+
+return _.upperCase(item.name);#### Example 1: Load Libraries Once
+
+```
+
+**Init Code:**
+
+✅ **Fast:**```javascript
+
+```javascriptconst { nanoid } = require('nanoid');
+
+// Init Code - loads onceconst _ = require('lodash');
+
+const _ = require('lodash');const dayjs = require('dayjs');
+
+
+
+// Main Code - 100x faster// These are now available in Main Code
+
+return _.upperCase(item.name);```
+
+```
+
+**Main Code:**
+
+### 2. Specify Library Versions```javascript
+
+// No need to require() again - much faster!
+
+✅ **Recommended:**return {
+
+```  id: nanoid(),
+
+lodash@4.17.21, dayjs@1.11.10  timestamp: dayjs().format(),
+
+```  name: _.upperCase($input.item.json.name)
+
+};
+
+❌ **Unpredictable:**```
+
+```
+
+lodash@latest, dayjs@latest#### Example 2: Create Helper Functions
+
+```
+
+**Init Code:**
+
+### 3. Use Cache TTL Wisely```javascript
+
+// Create reusable functions
+
+```function validateEmail(email) {
+
+0     → Maximum speed (never reinstall)  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+1440  → Daily updates (balanced)}
+
+10080 → Weekly updates (stable deps)
+
+```function formatPhone(phone) {
+
+  return phone.replace(/\D/g, '').slice(0, 10);
+
+---}
+
+
+
+## Migration from Native Code Nodefunction sanitizeString(str) {
+
+  return str.trim().toLowerCase();
+
+### Key Differences}
+
+```
+
+| Native Code | Code Plus |
+
+|-------------|-----------|**Main Code:**
+
+| No `require()` | ✅ `require('any-package')` |```javascript
+
+| No Init Code | ✅ Separate Init + Main |const item = $input.item.json;
+
+| Single mode | ✅ 3 execution modes |
+
+return {
+
+### Migration Steps  ...item,
+
+  email: sanitizeString(item.email),
+
+1. Copy code from native Code node  emailValid: validateEmail(item.email),
+
+2. Add required libraries to Libraries field  phone: formatPhone(item.phone)
+
+3. Add `require()` statements};
+
+4. Test thoroughly```
+
+
+
+**Example:**#### Example 3: Load Reference Data Once
+
+
+
+**Before (Native):****Init Code:**
+
+```javascript```javascript
+
+const ids = items.map((item, i) => ({const fs = require('fs');
+
+  ...item.json,
+
+  id: `${Date.now()}-${i}`// Load lookup tables once
+
+}));const countryMap = {
+
+return ids.map(json => ({ json }));  'US': 'United States',
+
+```  'UK': 'United Kingdom',
+
+  'TH': 'Thailand',
+
+**After (Code Plus):**  'JP': 'Japan'
+
+```javascript};
+
+// Libraries: nanoid
+
+const { nanoid } = require('nanoid');const currencyRates = {
+
+  'USD': 1,
+
+return items.map(item => ({  'EUR': 0.92,
+
+  ...item,  'GBP': 0.79,
+
+  id: nanoid()  'THB': 35.50
+
+}));};
+
+```
+
+// Cache for repeated lookups
+
+---const cache = new Map();
+
+```
+
+## Troubleshooting
+
+**Main Code:**
+
+### "Library not found"```javascript
+
+**Solution:** Check package name on npmjs.com, try Force Reinstallconst item = $input.item.json;
+
+
+
+### "Timeout exceeded"return {
+
+**Solution:** Increase timeout in Options or optimize code  ...item,
+
+  countryName: countryMap[item.countryCode] || 'Unknown',
+
+### "Cannot set properties of undefined"  priceUSD: item.price * currencyRates[item.currency]
+
+**Solution:** Check variable names (`items`, `item`, not `$input`)};
+
+```
+
+### "Cache directory not writable"
+
+**Solution:** Check permissions or use custom Cache Directory#### Example 4: API Client Setup
+
+
+
+---**Init Code:**
+
+```javascript
+
+## Featuresconst axios = require('axios');
+
+
+
+- **npm Library Support** — Install any npm package// Create configured API client once
+
+- **Persistent Caching** — Fast library reuse across executionsconst apiClient = axios.create({
+
+- **Init Code** — One-time setup for performance  baseURL: 'https://api.example.com',
+
+- **Multiple Modes** — Choose execution strategy  timeout: 5000,
+
+- **Auto Field Switching** — Fields change by Language & Mode  headers: {
+
+- **VM Sandbox** — Secure code execution    'Authorization': 'Bearer YOUR_TOKEN',
+
+- **Error Handling** — Continue on fail support    'Content-Type': 'application/json'
+
+- **Console Output** — Debug with console.log()  }
+
+});
 
 ---```
 
 
 
-### 2️⃣ **Mode** (Execution Strategy)## Detailed Parameters & Behavior (English)
-
-
-
-Choose **how your code runs** across input items. This is crucial for performance and logic!### Language
-
-- Options: `JavaScript` (supported), `Python (Beta)`, `Python (Native) (Beta)`.
-
-#### 🔁 **Run Once for Each Item**- Current behavior: Only `JavaScript` executes in Code Plus. Selecting Python shows a friendly message and prevents execution.
-
-- Roadmap: Python support via system `python` + `venv` and/or Pyodide.
-
-Your code executes **separately for each input item**.
-
-### Mode
-
-**When to use:**- `Run Once for Each Item`
-
-- Transform/modify each item individually  - Context: `item.json`, `items.map(x => x.json)`, `index`, `$input.item = item.json`.
-
-- Add unique IDs or timestamps per item  - Execution: Runs once per input item. Outputs are paired with inputs via `pairedItem`.
-
-- Process items independently  - Returns: Array → multiple outputs for that item; Object → one output; `undefined` → passthrough current `item.json`.
-
-  - Best for: map/transform per item.
-
-**Available context:**- `Run Once for All Items`
-
-- `$input.item.json` — Current item's data  - Context: `items` is an array of all `json` payloads; `$input.item = items[0]?.json`.
-
-- `$input.all()` — All items (if needed for comparison)  - Execution: Runs once for the whole batch.
-
-- `item` — Alias for `$input.item.json`  - Returns: Array → multiple outputs overall; Object → one output; `undefined` → passthrough first item’s `json` (if present).
-
-- `index` — Current item index (0-based)  - Best for: aggregate/summary.
-
-- `n8n Code (compat)`
-
-**Example:**  - Context: full `item` and `items` objects (not only `json`), plus `index`, `$input.item = item`.
-
-```javascript  - Execution: Iterates per item internally, like n8n’s native Code node.
-
-// Add a unique ID to each item  - Returns: Native Code node style (`return items`, `return { json: ... }`, `return [ ... ]`, `return` passthrough).
-
-const { nanoid } = require('nanoid');  - Best for: migration from the native Code node or when full item structure is required.
-
-
-
-return {### Libraries
-
-  id: nanoid(),- Input formats: comma-separated (`nanoid@latest,lodash`) or JSON array (`["nanoid","dayjs@^1"]`).
-
-  index: index,- Installed into the node’s cache directory (default: `~/.n8n/code-plus-cache`).
-
-  data: $input.item.json- `Force Reinstall` reinstalls even if present; `Clear Cache Before Run` removes cache `node_modules` before installing.
-
-};
-
-```### Init Code
-
-- Runs once before main code in the same sandbox; supports top-level `await` and `return` (async wrapper).
-
-**Input:**- Use for preloading libraries, setting globals, warm-ups.
-
-```json
-
-[### Main Code
-
-  { "name": "Alice" },- JavaScript in a restricted VM with custom `require()` bound to the cache.
-
-  { "name": "Bob" }- Supports top-level `await`/`return`; `Timeout (ms)` applies to both init and main code.
-
-]
-
-```### Options
-
-- `Cache Directory`: Path for library cache (default `~/.n8n/code-plus-cache`).
-
-**Output:**- `Clear Cache Before Run`: Remove cached modules before reinstalling.
-
-```json- `Force Reinstall`: Reinstall libraries regardless of presence.
-
-[- `Timeout (ms)`: Max execution time for init/main code.
-
-  { "id": "V1StGXR8_", "index": 0, "data": { "name": "Alice" } },- `Cache TTL (minutes)`: Automatically clears installed libraries when the last install time exceeds this TTL. Set `0` to disable. Useful to keep memory fresh by re-installing daily or after fixed periods.
-
-  { "id": "KYfwxwjl_", "index": 1, "data": { "name": "Bob" } }- `Preinstall Only`: Install libraries and return a summary without running code.
-
-]
-
-```### Execution Context
-
-- `console`: Forwarded to the UI in manual mode; to stdout in execute mode when `CODE_ENABLE_STDOUT="true"`.
-
----- `$input` helper:
-
-  - `all()` returns all `json` payloads.
-
-#### 🎯 **Run Once for All Items**  - `item` is set per mode (`item.json` for per-item/once; full `item` in compat mode).
-
-- `require()`: Scoped to the cache directory for controlled loading of npm packages.
-
-Your code executes **once for the entire batch** of items.- Built-ins: `Buffer`, `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`.
-
-- `helpers`: Exposes n8n helpers via `helpers` in the sandbox.
-
-**When to use:**
-
-- Aggregate data (sum, average, count)### Error Handling
-
-- Generate reports or summaries- Throws `NodeOperationError` on failures; with `Continue On Fail`, returns an error item instead of halting.
-
-- Process all items together- Library installation failures include detailed stdout/stderr in the `detail` field.
-
-
-
-**Available context:**### Environment Variables
-
-- `items` — Array of all items' JSON data- `CODE_ENABLE_STDOUT`: When set to `"true"`, forwards console output to stdout in execute mode (non-manual). Otherwise, console output appears in the UI only during manual runs.
-
-- `$input.all()` — Same as `items`
-
-- `$input.item` — First item (for convenience)### Examples by Mode
-
-- Per-item transform:
-
-**Example:**```js
-
-```javascriptreturn { ...item, json: { ...item.json, idx: index } };
-
-// Calculate statistics for all items```
-
-const _ = require('lodash');- Aggregate once:
-
-```js
-
-const total = _.sumBy(items, 'amount');const sum = items.reduce((acc, x) => acc + (x.value || 0), 0);
-
-const average = _.meanBy(items, 'amount');return { total: sum };
-
-const count = items.length;```
-
-- Compat passthrough with in-place edit:
-
-return {```js
-
-  summary: {items[index].json.tag = 'processed';
-
-    total,return items;
-
-    average,```
-
-    count,
-
-    timestamp: new Date().toISOString()## Examples
-
-  }- Generate IDs for each item using `nanoid`:
-
-};```js
-
-```const { nanoid } = require('nanoid');
-
-return items.map((item) => ({ ...item, id: nanoid() }));
-
-**Input:**```
-
-```json
-
-[- Use `lodash` to chunk data:
-
-  { "amount": 100 },```js
-
-  { "amount": 200 },const _ = require('lodash');
-
-  { "amount": 50 }const chunks = _.chunk(items, 50);
-
-]return { chunksCount: chunks.length };
-
-``````
-
-
-
-**Output:**- Run once and stamp a timestamp via `dayjs`:
-
-```json```js
-
-[const dayjs = require('dayjs');
-
-  {return { generatedAt: dayjs().toISOString() };
-
-    "summary": {```
-
-      "total": 350,
-
-      "average": 116.67,## Notes & Limitations
-
-      "count": 3,- Requires network access and permission to run `npm install` on the n8n server.
-
-      "timestamp": "2025-11-05T10:30:00.000Z"- Libraries are installed into the cache directory only, not into n8n itself.
-
-    }- `require()` is restricted to the cache; Node built-ins are accessible via the sandbox.
-
-  }- Avoid long-running or blocking code; configure `Timeout (ms)` appropriately.
-
-]- Version `0.1.1` adjusted the build output so n8n loads from `dist/nodes/CodePlus/CodePlus.node.js`.
-
-```- Python execution (`python` / `pythonNative`) is not supported in Code Plus; use the native Code node in n8n for Python.
-
-
-
-------
-
-
-
-#### 🔄 **n8n Code (compat)**Made with ❤️ for the n8n community
-
-
-
-**Compatibility mode** with the native n8n Code node. Use this when migrating from the native Code node.## Roadmap
-
-- Recent
-
-**When to use:**  - 0.1.7 shipped: Cache TTL (minutes) — auto-prunes cached `node_modules` after a configurable lifetime and reinstalls on the next run.
-
-- Migrating existing workflows from native Code node
-
-- Need full `items` structure (with `.json`, `.binary`, etc.)- Near-term (0.1.x)
-
-- Want native Code node behavior  - Add UI toggle for stdout (replace `CODE_ENABLE_STDOUT` env var).
-
-  - Expand `$input` and console forwarding docs with examples/screenshots.
-
-**Available context:**  - Review default `Mode` to align with the native Code node.
-
-- `items` — Full items array (not just JSON)  - Concurrency control for `Run Once for Each Item`.
-
-- `item` — Current item object  - Internationalized error messages (English/Thai) with structured details.
-
-- `index` — Current index
-
-- Python Support
-
-**Example:**  - Execute Python via `venv + pip` with per-node cache.
-
-```javascript  - Cross-platform handling (Windows/Linux/macOS) and compiled wheels.
-
-// Modify items in-place (native Code node style)  - Safety: timeouts, memory limits, sanitized imports.
-
-for (let i = 0; i < items.length; i++) {  - `Python (Native)` via Pyodide as a fallback when system Python is unavailable.
-
-  items[i].json.processed = true;  - Language-aware editor (syntax highlight/linting for Python).
-
-  items[i].json.position = i + 1;
-
-}- Execution & Security
-
-  - Require allowlist/denylist.
-
-return items;  - Offline mode and dependency whitelist scanning; integrity checks via lockfile.
-
-```  - Resource limits (CPU/Memory) and configurable concurrency.
-
-  - Harden sandbox and restrict accessible globals.
-
-**Or return a new single item:**
-
-```javascript- Features & Compatibility
-
-return { json: { message: "All items processed", count: items.length } };  - Multiple outputs and binary data support.
-
-```  - Expand `$input` (e.g., `first`, `pairedItem`) to parity with the native Code node.
-
-  - UI list of installed libraries with upgrade/remove actions.
-
----  - Proxy and custom registry support for installations.
-
-
-
-### 3️⃣ **Libraries** (npm Packages)- UX & Developer Experience
-
-  - Template/snippet library in the editor.
-
-Install any npm package you need! Packages are cached for fast reuse.  - Autocomplete for `require()` from installed libraries.
-
-  - Debug mode with step logging and timing.
-
-**Format options:**  - CLI for preinstall/prune cache operations.
-
-  - Unit/integration tests and full example workflows.
-
-**Comma-separated:**
-
-```- Docs & Community
-
-nanoid@latest, lodash, dayjs@^1.11.0  - Migration guide from the native Code node.
-
-```  - API reference for helpers and `$input`.
-
-  - Contribution guide, code style, issue templates.
-
-**JSON array:**  - Security policy and responsible disclosure.
-
-```json
-
-["nanoid", "lodash@4.17.21", "axios"]- Monitoring
-
-```  - Opt-in telemetry and anonymized usage metrics.
-
-  - Log viewer UI with filters and export.
-
-**Common useful libraries:**
-
-- `lodash` — Powerful data manipulation utilities- Performance
-
-- `dayjs` — Date/time handling  - Cache warm-up strategies and TTL tuning.
-
-- `nanoid` — Unique ID generation  - Prebundle frequently used libraries to reduce cold starts.
-
-- `axios` — HTTP requests
-
-- `uuid` — UUID generation## Development
-
-- `crypto-js` — Encryption/hashing```bash
-
-- `validator` — String validationnpm install
-
-- `cheerio` — HTML parsing (like jQuery)npm run build
-
-# Use npm link as shown above to connect with n8n
-
-**Example with multiple libraries:**```
+## Use Cases**Main Code:**
 
 ```javascript
 
-// Libraries: lodash, dayjs, nanoid## Changelog
+- **Custom Data Processing** — Complex transformations with lodash// Use the pre-configured client
 
-- See `CHANGELOG.md` for release notes.
+- **ID Generation** — Unique IDs with nanoid/uuidconst userId = $input.item.json.userId;
 
-const _ = require('lodash');
+- **Date/Time Operations** — Format dates with dayjs/momentconst response = await apiClient.get(`/users/${userId}`);
 
-const dayjs = require('dayjs');## License
+- **API Integration** — HTTP requests with axios
 
-const { nanoid } = require('nanoid');- MIT License — see `LICENSE.md`.
+- **Data Validation** — Validate with validator/joireturn {
 
+- **Text Processing** — Parse HTML with cheerio  userId,
 
+- **Cryptography** — Hash/encrypt with crypto-js  userData: response.data
 
-const grouped = _.groupBy($input.all(), 'category');## References
+- **Performance** — Share resources across items};
 
-- [0] @warnyin/n8n-nodes-swagger-api — README structure and sections [ref-swagger]
-
-return {
-
-  id: nanoid(),[ref-swagger]: https://www.npmjs.com/package/@warnyin/n8n-nodes-swagger-api#-warnyinn8n-nodes-swagger-api
-  timestamp: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-  categories: Object.keys(grouped),
-  totalItems: $input.all().length
-};
 ```
-
-**How it works:**
-1. Libraries are installed to `~/.n8n/code-plus-cache`
-2. First run installs (takes a few seconds)
-3. Subsequent runs use cached versions (instant!)
-4. Cache persists across workflow executions
 
 ---
 
-### 4️⃣ **Init Code** (One-Time Setup)
-
-Code that runs **once before Main Code**, regardless of how many items you process.
-
-**Why use Init Code?**
-
-✅ **Performance:** Load libraries once, not per item  
-✅ **Clean code:** Separate setup from business logic  
-✅ **Shared resources:** Database connections, API clients  
-✅ **Helper functions:** Reusable utilities
-
-#### Example 1: Load Libraries Once
-
-**Init Code:**
-```javascript
-const { nanoid } = require('nanoid');
-const _ = require('lodash');
-const dayjs = require('dayjs');
-
-// These are now available in Main Code
-```
-
-**Main Code:**
-```javascript
-// No need to require() again - much faster!
-return {
-  id: nanoid(),
-  timestamp: dayjs().format(),
-  name: _.upperCase($input.item.json.name)
-};
-```
-
-#### Example 2: Create Helper Functions
-
-**Init Code:**
-```javascript
-// Create reusable functions
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function formatPhone(phone) {
-  return phone.replace(/\D/g, '').slice(0, 10);
-}
-
-function sanitizeString(str) {
-  return str.trim().toLowerCase();
-}
-```
-
-**Main Code:**
-```javascript
-const item = $input.item.json;
-
-return {
-  ...item,
-  email: sanitizeString(item.email),
-  emailValid: validateEmail(item.email),
-  phone: formatPhone(item.phone)
-};
-```
-
-#### Example 3: Load Reference Data Once
-
-**Init Code:**
-```javascript
-const fs = require('fs');
-
-// Load lookup tables once
-const countryMap = {
-  'US': 'United States',
-  'UK': 'United Kingdom',
-  'TH': 'Thailand',
-  'JP': 'Japan'
-};
-
-const currencyRates = {
-  'USD': 1,
-  'EUR': 0.92,
-  'GBP': 0.79,
-  'THB': 35.50
-};
-
-// Cache for repeated lookups
-const cache = new Map();
-```
-
-**Main Code:**
-```javascript
-const item = $input.item.json;
-
-return {
-  ...item,
-  countryName: countryMap[item.countryCode] || 'Unknown',
-  priceUSD: item.price * currencyRates[item.currency]
-};
-```
-
-#### Example 4: API Client Setup
-
-**Init Code:**
-```javascript
-const axios = require('axios');
-
-// Create configured API client once
-const apiClient = axios.create({
-  baseURL: 'https://api.example.com',
-  timeout: 5000,
-  headers: {
-    'Authorization': 'Bearer YOUR_TOKEN',
-    'Content-Type': 'application/json'
-  }
-});
-```
-
-**Main Code:**
-```javascript
-// Use the pre-configured client
-const userId = $input.item.json.userId;
-const response = await apiClient.get(`/users/${userId}`);
-
-return {
-  userId,
-  userData: response.data
-};
-```
-
 #### Example 5: Global State Tracking
 
+## Compatibility
+
 **Init Code:**
-```javascript
-const crypto = require('crypto');
+
+- Requires n8n version 0.187.0 or higher```javascript
+
+- Node.js 16+ recommendedconst crypto = require('crypto');
+
+- npm must be installed on server
 
 // Generate unique workflow run ID
-const runId = crypto.randomBytes(8).toString('hex');
+
+---const runId = crypto.randomBytes(8).toString('hex');
+
 const startTime = Date.now();
-let processedCount = 0;
+
+## Resourceslet processedCount = 0;
+
 let errorCount = 0;
-```
 
-**Main Code:**
-```javascript
-processedCount++;
+- **npm Package:** [@warnyin/n8n-nodes-code-plus](https://www.npmjs.com/package/@warnyin/n8n-nodes-code-plus)```
 
-try {
+- **GitHub:** [warnyin/n8n-nodes-code-plus](https://github.com/warnyin/n8n-nodes-code-plus)
+
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)**Main Code:**
+
+- **n8n Community:** [community.n8n.io](https://community.n8n.io)```javascript
+
+- **n8n Documentation:** [docs.n8n.io](https://docs.n8n.io)processedCount++;
+
+
+
+---try {
+
   // Your processing logic
-  const result = someProcessing($input.item.json);
-  
-  return {
-    runId,
-    itemNumber: processedCount,
-    elapsedMs: Date.now() - startTime,
-    data: result
-  };
-} catch (error) {
-  errorCount++;
-  throw error;
-}
-```
 
-**Key Benefits:**
+## Version History  const result = someProcessing($input.item.json);
+
+  
+
+- **0.1.15** — Fixed default code errors + editor popup sizing  return {
+
+- **0.1.14** — Mode-based field switching + complete README    runId,
+
+- **0.1.13** — Language-based field separation with displayOptions    itemNumber: processedCount,
+
+- **0.1.12** — Dynamic default examples    elapsedMs: Date.now() - startTime,
+
+- **0.1.7** — Cache TTL support    data: result
+
+  };
+
+See [CHANGELOG.md](CHANGELOG.md) for full history.} catch (error) {
+
+  errorCount++;
+
+---  throw error;
+
+}
+
+## License```
+
+
+
+[MIT](LICENSE.md)**Key Benefits:**
+
 - 🚀 **10-100x faster** for multi-item processing
-- 🧹 **Cleaner main code** without setup clutter
+
+---- 🧹 **Cleaner main code** without setup clutter
+
 - 💾 **Resource pooling** (connections, caches)
-- 🔧 **Better organization** (setup vs. logic)
+
+**Made with ❤️ for the n8n community**- 🔧 **Better organization** (setup vs. logic)
+
 
 ---
 

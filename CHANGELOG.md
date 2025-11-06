@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.16] - 2025-11-06
+- **Documentation**: Complete README rewrite for better clarity and conciseness.
+- **Structure**: Reorganized following Ex-README pattern with clear sections:
+  - Installation guide (Community Nodes + Manual)
+  - Parameters with practical examples
+  - Complete examples (ID generation, validation, reports, API)
+  - Available context and helpers
+  - Performance tips and migration guide
+  - Troubleshooting section
+- **Length**: Reduced from 2000+ to ~700 lines while maintaining full coverage.
+- **Usability**: Removed excessive emojis and redundant content.
+- **Examples**: Streamlined to 4 focused real-world use cases.
+- **Backup**: Full detailed README preserved in README.full.md.
+
 ## [0.1.15] - 2025-11-06
 - **Critical Fix**: Fixed "Cannot set properties of undefined" error in Run Once for Each Item and Run Once for All Items modes.
 - **Code Fixes**: Updated default code examples to use correct context variables:
