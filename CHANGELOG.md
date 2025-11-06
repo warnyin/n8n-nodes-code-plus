@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.1.23] - 2025-11-06
+- **Critical Fix**: Fixed Run Once for All Items mode not returning modified items.
+- **Bug**: Items array was exposing full n8n item structure instead of JSON objects.
+- **Solution**: Changed `items` to `items.map(x => x.json)` for Run Once for All Items mode.
+- **Impact**: Field modifications (like `item.short_id = nanoid()`) now properly appear in output.
+- **Thanks**: To user for reporting the issue with console logs showing success but output missing fields.
+
 ## [0.1.22] - 2025-11-06
 - **Documentation**: Added comprehensive Troubleshooting section in README.
 - **Examples**: Clarified Mode-specific examples showing correct item/items usage.

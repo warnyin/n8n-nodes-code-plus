@@ -379,12 +379,12 @@ export class CodePlus implements INodeType {
     // Execute main code
     const wrappedMainCode = wrapAsyncIIFE(code);
     if (mode === "runOnceForAllItems") {
-      // Compatibility mode: run once and expose full items like native Code node
+      // Run once and expose items as JSON array for convenience
       try {
-        (context as any).items = items;
-        (context as any).item = items[0];
+        (context as any).items = items.map((x) => x.json);
+        (context as any).item = items[0]?.json;
         (context as any).index = 0;
-        (context as any).$input.item = items[0];
+        (context as any).$input.item = items[0]?.json;
 
         const result = await Promise.resolve(
           vm.runInContext(wrappedMainCode, context, { timeout: timeoutMs })
